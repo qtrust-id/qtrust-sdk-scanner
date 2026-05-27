@@ -1,5 +1,5 @@
 import SwiftUI
-import Scanner
+import QTrustScanner
 
 struct ResultView: View {
     let result: ScanResult
@@ -57,26 +57,24 @@ struct ResultView: View {
             }
 
             // Bounding Box
-            if let bbox = result.boundingBox {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Bounding Box")
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Bounding Box")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("x: \(result.boundingBox.x)")
                         .font(.caption)
-                        .foregroundColor(.secondary)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("x: \(String(format: "%.2f", bbox.x))")
-                            .font(.caption)
-                        Text("y: \(String(format: "%.2f", bbox.y))")
-                            .font(.caption)
-                        Text("width: \(String(format: "%.2f", bbox.width))")
-                            .font(.caption)
-                        Text("height: \(String(format: "%.2f", bbox.height))")
-                            .font(.caption)
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("y: \(result.boundingBox.y)")
+                        .font(.caption)
+                    Text("width: \(result.boundingBox.width)")
+                        .font(.caption)
+                    Text("height: \(result.boundingBox.height)")
+                        .font(.caption)
                 }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if copied {
@@ -104,13 +102,10 @@ struct ResultView: View {
 }
 
 #Preview {
-    ResultView(
-        result: ScanResult(
-            data: "https://example.com",
-            format: "QR_CODE",
-            confidence: 0.95,
-            boundingBox: BoundingBox(x: 10, y: 20, width: 100, height: 100)
-        )
-    )
-    .padding()
+    let json = """
+    {"data":"https://example.com","format":"QR_CODE","confidence":0.95,"bounding_box":{"x":10,"y":20,"width":100,"height":100}}
+    """.data(using: .utf8)!
+    let result = try! JSONDecoder().decode(ScanResult.self, from: json)
+    ResultView(result: result)
+        .padding()
 }

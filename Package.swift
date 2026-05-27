@@ -2,20 +2,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "Scanner",
+    name: "QTrustScanner",
     platforms: [.iOS(.v15)],
     products: [
-        .library(name: "Scanner", targets: ["Scanner"]),
+        .library(name: "QTrustScanner", targets: ["QTrustScanner"]),
     ],
     targets: [
         .target(
-            name: "Scanner",
+            name: "QTrustScanner",
             dependencies: [],
             path: "Sources/Scanner"
         ),
         .testTarget(
-            name: "ScannerTests",
-            dependencies: ["Scanner"],
+            name: "QTrustScannerTests",
+            dependencies: ["QTrustScanner"],
             path: "Tests/ScannerTests"
         ),
     ]

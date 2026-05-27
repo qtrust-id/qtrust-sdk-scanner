@@ -1,5 +1,5 @@
 import XCTest
-@testable import Scanner
+@testable import QTrustScanner
 
 final class ScanResultTests: XCTestCase {
     func testDecodeFromJSON() throws {

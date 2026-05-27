@@ -1,0 +1,41 @@
+name: ScannerSample
+options:
+  bundleIdPrefix: id.qtrust.scanner
+  deploymentTarget:
+    iOS: "15.0"
+  xcodeVersion: "15.0"
+
+packages:
+  QTrustScanner:
+    path: ../
+
+targets:
+  ScannerSample:
+    type: application
+    platform: iOS
+    sources:
+      - path: .
+        excludes:
+          - project.yml
+          - README.md
+          - "*.xcodeproj/**"
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        PRODUCT_BUNDLE_IDENTIFIER: id.qtrust.scanner.sample
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: 1
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: RTJ97ZPCBQ
+    info:
+      path: Info.plist
+      properties:
+        NSCameraUsageDescription: "Camera is required to scan QR codes and barcodes"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoadsInWebContent: true
+          NSAllowsLocalNetworking: true
+    dependencies:
+      - package: QTrustScanner

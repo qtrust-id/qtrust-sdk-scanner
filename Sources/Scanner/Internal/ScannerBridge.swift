@@ -2,6 +2,9 @@ import Foundation
 
 #if os(iOS)
 import WebKit
+import os.log
+
+private let logger = Logger(subsystem: "id.qtrust.scanner", category: "ScannerBridge")
 
 final class ScannerBridge: NSObject, WKScriptMessageHandler, @unchecked Sendable {
     var onResult: ((ScanResult) -> Void)?
@@ -22,12 +25,25 @@ final class ScannerBridge: NSObject, WKScriptMessageHandler, @unchecked Sendable
             handleResult(body["data"])
         case "error":
             let msg = body["message"] as? String ?? "unknown error"
+            logger.error("Bridge error: \(msg)")
             DispatchQueue.main.async { [weak self] in
                 self?.onError?(.serverError(msg))
             }
         case "ready":
+            logger.info("Bridge: ready")
             DispatchQueue.main.async { [weak self] in
                 self?.onReady?()
+            }
+        case "console":
+            let level = body["level"] as? String ?? "log"
+            let msg = body["message"] as? String ?? ""
+            switch level {
+            case "error":
+                logger.error("[JS] \(msg)")
+            case "warn":
+                logger.warning("[JS] \(msg)")
+            default:
+                logger.info("[JS] \(msg)")
             }
         default:
             break
@@ -43,13 +59,13 @@ final class ScannerBridge: NSObject, WKScriptMessageHandler, @unchecked Sendable
             }
             return
         }
+        logger.info("Bridge result: \(result.data)")
         DispatchQueue.main.async { [weak self] in
             self?.onResult?(result)
         }
     }
 }
 #else
-// Stub for non-iOS platforms
 final class ScannerBridge: @unchecked Sendable {
     var onResult: ((ScanResult) -> Void)?
     var onError: ((ScannerError) -> Void)?
