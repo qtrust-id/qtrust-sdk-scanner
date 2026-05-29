@@ -3,7 +3,7 @@ import XCTest
 
 final class ScanTypeTests: XCTestCase {
     func testRawValues() {
-        XCTAssertEqual(ScanType.qr.rawValue, "qr")
-        XCTAssertEqual(ScanType.barcode.rawValue, "barcode")
+        XCTAssertEqual(ScanType.qr.rawValue, 0)
+        XCTAssertEqual(ScanType.barcode.rawValue, 1)
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-public enum ScanType: String, Sendable {
-    case qr = "qr"
-    case barcode = "barcode"
+public enum ScanType: Int, Sendable {
+    case qr = 0
+    case barcode = 1
 }

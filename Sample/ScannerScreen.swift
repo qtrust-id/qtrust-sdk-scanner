@@ -71,6 +71,7 @@ private struct DirectWebView: UIViewRepresentable {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = []
+        config.websiteDataStore = .nonPersistent()
 
         let contentController = WKUserContentController()
         contentController.add(context.coordinator, name: "scannerBridge")
@@ -113,9 +114,9 @@ private struct DirectWebView: UIViewRepresentable {
 
         // Load from cloud HTTPS (secure context — getUserMedia works)
         let baseUrl = "https://scanner.noersy.my.id"
-        let urlStr = "\(baseUrl)/?type=\(scanType.rawValue)"
+        let urlStr = "\(baseUrl)/?type=\(scanType.rawValue)&key=\(apiKey)&mode=sdk"
         if let url = URL(string: urlStr) {
-            wv.load(URLRequest(url: url))
+            wv.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData))
             print("[DirectWebView] Loading: \(urlStr)")
         }
 
@@ -168,11 +169,37 @@ private struct DirectWebView: UIViewRepresentable {
             }
         }
 
+        private var receivedHTTPError = false
+
+        // Intercept HTTP response — detect 401 before page finishes
+        func webView(
+            _ webView: WKWebView,
+            decidePolicyFor navigationResponse: WKNavigationResponse,
+            decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void
+        ) {
+            if let http = navigationResponse.response as? HTTPURLResponse, http.statusCode >= 400 {
+                print("[DirectWebView] HTTP \(http.statusCode)")
+                receivedHTTPError = true
+                decisionHandler(.allow) // Let error page render
+                let msg = http.statusCode == 401 ? "Invalid or missing API key" : "Server error (HTTP \(http.statusCode))"
+                DispatchQueue.main.async {
+                    self.revealWebView()
+                    self.parent.onError(msg)
+                }
+                return
+            }
+            decisionHandler(.allow)
+        }
+
         // WKNavigationDelegate
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            if receivedHTTPError {
+                print("[DirectWebView] didFinish (skipping ScannerInit — HTTP error)")
+                return
+            }
             print("[DirectWebView] Page loaded, calling ScannerInit")
             let serverUrl = "https://scanner.noersy.my.id"
-            let js = "window.ScannerInit({key: '\(parent.apiKey)', serverUrl: '\(serverUrl)', type: '\(parent.scanType.rawValue)'});"
+            let js = "window.ScannerInit({key: '\(parent.apiKey)', serverUrl: '\(serverUrl)', type: \(parent.scanType.rawValue)});"
             webView.evaluateJavaScript(js) { _, error in
                 if let error {
                     print("[DirectWebView] JS error: \(error)")

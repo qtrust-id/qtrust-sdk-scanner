@@ -111,7 +111,8 @@ public final class ScannerView: UIView {
         wv.uiDelegate = camDelegate
 
         // Load scanner page from cloud HTTPS (secure context — getUserMedia works)
-        let urlString = "\(config.baseUrl)/?type=\(scanType.rawValue)"
+        // mode=sdk skips home screen, skip_tutorial=1 bypasses tutorial
+        let urlString = "\(config.baseUrl)/?type=\(scanType.rawValue)&key=\(config.apiKey)&mode=sdk&skip_tutorial=1"
         logger.info("performLoad: loading URL \(urlString)")
         guard let url = URL(string: urlString) else {
             logger.error("performLoad: invalid URL \(urlString)")
@@ -122,7 +123,7 @@ public final class ScannerView: UIView {
         let handler = PageLoadHandler(
             onLoad: { [weak wv] in
                 logger.info("PageLoadHandler: page loaded, calling ScannerInit")
-                let js = "window.ScannerInit({key: '\(config.apiKey)', serverUrl: '\(config.baseUrl)', type: '\(scanType.rawValue)'});"
+                let js = Self.buildInitJs(config: config, scanType: scanType)
                 wv?.evaluateJavaScript(js) { _, error in
                     if let error {
                         logger.error("JS eval error: \(error.localizedDescription)")
@@ -189,6 +190,23 @@ public final class ScannerView: UIView {
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.loadingTimeoutSec, execute: timeout)
     }
 
+    /// Build ScannerInit JS call with int enums and vendor config.
+    private static func buildInitJs(config: ScannerConfig, scanType: ScanType) -> String {
+        let key = config.apiKey.replacingOccurrences(of: "'", with: "\\'")
+        let serverUrl = config.baseUrl.replacingOccurrences(of: "'", with: "\\'")
+        let vc = config.vendorConfig
+        let vendorId = vc.vendorId.replacingOccurrences(of: "'", with: "\\'")
+        let textHint = vc.textHintScan.replacingOccurrences(of: "'", with: "\\'")
+        let skipTut = vc.skipTutorial ? "true" : "false"
+        let rawRes = vc.rawResult ? "true" : "false"
+        return """
+        window.ScannerInit({key: '\(key)', serverUrl: '\(serverUrl)', type: \(scanType.rawValue), \
+        config: {vendorId: '\(vendorId)', textHintScan: '\(textHint)', \
+        theme: \(vc.theme.rawValue), locale: \(vc.locale.rawValue), \
+        skipTutorial: \(skipTut), rawResult: \(rawRes)}});
+        """
+    }
+
     func tearDown() {
         logger.info("tearDown called")
         pendingLoad = nil
@@ -213,13 +231,49 @@ public final class ScannerView: UIView {
 private final class PageLoadHandler: NSObject, WKNavigationDelegate {
     private let onLoad: () -> Void
     private let onError: ((Error) -> Void)?
+    private var receivedHTTPError = false
 
     init(onLoad: @escaping () -> Void, onError: ((Error) -> Void)? = nil) {
         self.onLoad = onLoad
         self.onError = onError
     }
 
+    // Intercept HTTP response — detect 401/4xx/5xx before page finishes loading
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationResponse: WKNavigationResponse,
+        decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void
+    ) {
+        if let httpResponse = navigationResponse.response as? HTTPURLResponse,
+           httpResponse.statusCode >= 400 {
+            logger.error("WKNav: HTTP \(httpResponse.statusCode)")
+            receivedHTTPError = true
+            let message: String
+            switch httpResponse.statusCode {
+            case 401:
+                message = "Invalid or missing API key"
+            case 403:
+                message = "Access forbidden"
+            default:
+                message = "Server error (HTTP \(httpResponse.statusCode))"
+            }
+            // Allow the response so WebView doesn't show blank — error page will render
+            decisionHandler(.allow)
+            onError?(NSError(
+                domain: "ScannerHTTP",
+                code: httpResponse.statusCode,
+                userInfo: [NSLocalizedDescriptionKey: message]
+            ))
+            return
+        }
+        decisionHandler(.allow)
+    }
+
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if receivedHTTPError {
+            logger.info("WKNav: didFinish (skipping onLoad — HTTP error page)")
+            return
+        }
         logger.info("WKNav: didFinish")
         onLoad()
     }
