@@ -8,6 +8,8 @@ private typealias QRScanner = QTrustScanner.Scanner
 struct ScannerScreen: View {
     let apiKey: String
     let scanType: ScanType
+    let skipTutorial: Bool
+    let rawResult: Bool
     let apiStyle: ContentView.APIStyle
     let onResult: (ScanResult) -> Void
 
@@ -19,6 +21,8 @@ struct ScannerScreen: View {
         DirectWebView(
             apiKey: apiKey,
             scanType: scanType,
+            skipTutorial: skipTutorial,
+            rawResult: rawResult,
             apiStyle: apiStyle,
             onResult: { result in
                 onResult(result)
@@ -51,6 +55,8 @@ private final class FullBleedWebView: WKWebView {
 private struct DirectWebView: UIViewRepresentable {
     let apiKey: String
     let scanType: ScanType
+    let skipTutorial: Bool
+    let rawResult: Bool
     let apiStyle: ContentView.APIStyle
     let onResult: (ScanResult) -> Void
     let onError: (String) -> Void
@@ -199,7 +205,9 @@ private struct DirectWebView: UIViewRepresentable {
             }
             print("[DirectWebView] Page loaded, calling ScannerInit")
             let serverUrl = "https://scanner.noersy.my.id"
-            let js = "window.ScannerInit({key: '\(parent.apiKey)', serverUrl: '\(serverUrl)', type: \(parent.scanType.rawValue)});"
+            let skipTut = parent.skipTutorial ? "true" : "false"
+            let rawRes = parent.rawResult ? "true" : "false"
+            let js = "window.ScannerInit({key: '\(parent.apiKey)', serverUrl: '\(serverUrl)', type: \(parent.scanType.rawValue), config: {skipTutorial: \(skipTut), rawResult: \(rawRes)}});"
             webView.evaluateJavaScript(js) { _, error in
                 if let error {
                     print("[DirectWebView] JS error: \(error)")
@@ -279,6 +287,8 @@ private struct DirectWebView: UIViewRepresentable {
     ScannerScreen(
         apiKey: "sk_live_test",
         scanType: .qr,
+        skipTutorial: true,
+        rawResult: false,
         apiStyle: .callback,
         onResult: { _ in }
     )

@@ -49,6 +49,10 @@ enum WebViewFactory {
 
         config.userContentController = contentController
 
+        // Disable WKWebView URL cache — ensures fresh scanner assets on each load
+        let dataStore = WKWebsiteDataStore.nonPersistent()
+        config.websiteDataStore = dataStore
+
         let webView = WKWebView(frame: frame, configuration: config)
         webView.isOpaque = false
         webView.backgroundColor = .black
