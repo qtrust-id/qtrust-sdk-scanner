@@ -224,7 +224,6 @@ public final class ScannerView: UIView {
                 "theme": vc.theme.rawValue,
                 "locale": vc.locale.rawValue,
                 "skipTutorial": vc.skipTutorial,
-                "rawResult": vc.rawResult,
             ] as [String: Any],
         ]
         guard let data = try? JSONSerialization.data(withJSONObject: payload),

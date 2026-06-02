@@ -10,7 +10,7 @@ import { setDecodeCallbacks } from "./modules/decode.js";
 import { initEmbed } from "./modules/embed.js";
 import {
     showScanner, showHome, showHomeWithError, showResultOnHome,
-    showFlash, showTutorial, showResult, applyViewfinderMode,
+    showFlash, showTutorial, applyViewfinderMode,
     initHomeScreen, initTutorialScreen, initResultScreen
 } from "./modules/ui.js";
 
@@ -30,19 +30,16 @@ import {
 // to know which produced the result.
 function handleResult(data) {
     showFlash();
-    if (scanRawResult) {
-        if (state.isSDKMode) {
-            // SDK raw mode — callback to native bridge
-            bridgeResult(data);
-        } else {
-            // Web raw mode — show result on home, go back
-            showResultOnHome(data);
-            showHome();
-        }
-    } else {
-        // Show result screen (default for both SDK and web mode)
-        showResult(data);
+    // SDK mode (native WebView + web-SDK iframe) hands the raw result to the host
+    // and lets it own result presentation.
+    if (state.isSDKMode) {
+        bridgeResult(data);
+        return;
     }
+    // Standalone web demo — show the raw scan data inline on home. The dedicated
+    // result page is retired (it rendered placeholder vendor data, not the scan).
+    showResultOnHome(data);
+    showHome();
 }
 
 setWSCallbacks({
@@ -61,10 +58,6 @@ setDecodeCallbacks({ onResult: handleResult });
 // ── Scanner flow (PARALLEL init) ───────────────────────
 // Camera open and WebSocket connect run simultaneously.
 // Capture starts only when BOTH are ready (ready gate in capture.js).
-
-// Snapshot config flags at scan-start so mid-scan toggle changes
-// don't affect in-flight result handling.
-var scanRawResult = false;
 
 function startScannerFlow() {
     // Idempotent — the web SDK fires sdk_init on start + iframe load + sdk_ready
@@ -88,7 +81,6 @@ function startScannerFlow() {
     state.readySignaled = false;
     state.authRejected = false;
     state.fps = state.scanType === ScanType.BARCODE ? 10 : 5;
-    scanRawResult = state.config.rawResult;
     applyViewfinderMode();
 
     // Camera — marks cameraReady on success
@@ -200,7 +192,6 @@ btnZoomOut.addEventListener("click", function () { applyZoom(state.currentZoom -
  * @param {number}  [opts.config.theme]  — Theme enum (0=DARK, 1=LIGHT)
  * @param {number}  [opts.config.locale] — Locale enum (0=ID, 1=EN)
  * @param {boolean} [opts.config.skipTutorial] — true=skip tutorial (default), false=show tutorial
- * @param {boolean} [opts.config.rawResult]    — true=callback raw data, false=show result screen (default)
  * @param {string} [opts.config.formats]       — per-vendor symbology override, e.g. "PDF417|QRCode" (empty=default per type)
  */
 window.ScannerInit = function (opts) {
@@ -219,7 +210,6 @@ window.ScannerInit = function (opts) {
         if (typeof c.theme === "number") state.config.theme = c.theme;
         if (typeof c.locale === "number") state.config.locale = c.locale;
         if (typeof c.skipTutorial === "boolean") state.config.skipTutorial = c.skipTutorial;
-        if (typeof c.rawResult === "boolean") state.config.rawResult = c.rawResult;
         if (typeof c.formats === "string") state.config.formats = c.formats;
         dbg("ScannerInit: config=" + JSON.stringify(state.config));
     }
@@ -254,7 +244,6 @@ window.ScannerUpdateConfig = function (updates) {
     if (typeof c.theme === "number") state.config.theme = c.theme;
     if (typeof c.locale === "number") state.config.locale = c.locale;
     if (typeof c.skipTutorial === "boolean") state.config.skipTutorial = c.skipTutorial;
-    if (typeof c.rawResult === "boolean") state.config.rawResult = c.rawResult;
     if (typeof c.formats === "string") state.config.formats = c.formats;
     dbg("ScannerUpdateConfig: " + JSON.stringify(state.config));
 };
@@ -262,7 +251,6 @@ window.ScannerUpdateConfig = function (updates) {
 // Legacy compat
 window.ScannerSetAPIKey = function (key) {
     state.apiKey = key;
-    scanRawResult = state.config.rawResult;
     if (state.serverUrl) { connectWS(); }
 };
 

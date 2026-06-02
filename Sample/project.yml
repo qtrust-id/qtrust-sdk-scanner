@@ -19,6 +19,8 @@ targets:
           - project.yml
           - README.md
           - "*.xcodeproj/**"
+          - build
+          - "build/**"
     settings:
       base:
         SWIFT_VERSION: "5.9"

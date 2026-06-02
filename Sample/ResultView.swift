@@ -40,22 +40,6 @@ struct ResultView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            // Confidence
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Confidence")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                HStack {
-                    ProgressView(value: result.confidence, total: 1.0)
-                    Text(String(format: "%.0f%%", result.confidence * 100))
-                        .font(.body)
-                        .fontWeight(.semibold)
-                }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(8)
-            }
-
             // Bounding Box
             VStack(alignment: .leading, spacing: 8) {
                 Text("Bounding Box")
@@ -103,7 +87,7 @@ struct ResultView: View {
 
 #Preview {
     let json = """
-    {"data":"https://example.com","format":"QR_CODE","confidence":0.95,"bounding_box":{"x":10,"y":20,"width":100,"height":100}}
+    {"data":"https://example.com","format":"QR_CODE","bounding_box":{"x":10,"y":20,"width":100,"height":100}}
     """.data(using: .utf8)!
     let result = try! JSONDecoder().decode(ScanResult.self, from: json)
     ResultView(result: result)

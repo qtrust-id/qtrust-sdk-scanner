@@ -1,12 +1,9 @@
 "use strict";
 
 import { state, ScanType } from "./state.js";
-import { dbg } from "./debug.js";
 import { stopCapture } from "./capture.js";
 import { closeWS } from "./websocket.js";
 import { stopCamera } from "./camera.js";
-
-var CONFIDENCE_THRESHOLD = 0.5;
 
 var homeScreen = document.getElementById("home-screen");
 var scannerContainer = document.getElementById("scanner-container");
@@ -15,19 +12,10 @@ var resultScreen = document.getElementById("result-screen");
 var homeResultSection = document.getElementById("home-result");
 var resultDataEl = document.getElementById("result-data");
 var resultFormatEl = document.getElementById("result-format");
-var resultConfidenceEl = document.getElementById("result-confidence");
 var apiKeyError = document.getElementById("api-key-error");
 var flashOverlay = document.getElementById("flash-overlay");
 var viewfinder = document.getElementById("viewfinder");
 var scanInstructionText = document.getElementById("scan-instruction-text");
-
-// Result screen elements
-var resultQrStatus = document.getElementById("result-qr-status");
-var resultStatusIcon = document.getElementById("result-status-icon");
-var resultQrCode = document.getElementById("result-qr-code");
-var resultSerial = document.getElementById("result-serial");
-var resultScanCount = document.getElementById("result-scan-count");
-var resultProductName = document.getElementById("result-product-name");
 
 function hideAllScreens() {
     homeScreen.classList.add("hidden");
@@ -70,49 +58,6 @@ export function showResultOnHome(data) {
     homeResultSection.classList.remove("hidden");
     if (resultDataEl) resultDataEl.textContent = data.data || "";
     if (resultFormatEl) resultFormatEl.textContent = data.format || "";
-    if (resultConfidenceEl) {
-        var pct = ((data.confidence || 0) * 100).toFixed(1) + "%";
-        resultConfidenceEl.textContent = pct;
-    }
-}
-
-/**
- * Show full-screen result page with scan data.
- * Stops scanner pipeline and displays verification result.
- * Controlled by config.rawResult — when false (default), this screen is shown.
- * @param {Object} data — { data, format, confidence }
- */
-export function showResult(data) {
-    try {
-        stopCapture();
-        closeWS();
-        stopCamera();
-    } catch (err) {
-        dbg("showResult: cleanup error — " + (err ? err.message : "unknown"));
-    }
-    state.cameraReady = false;
-    state.wsAuthed = false;
-    state.scanActive = false;  // pipeline down — "Scan Lagi" can restart
-
-    // Populate result screen with scan data (textContent = XSS-safe)
-    if (resultQrCode) resultQrCode.textContent = data.data || "-";
-    if (resultSerial) resultSerial.textContent = data.serial || "213696348";
-    if (resultScanCount) resultScanCount.textContent = data.scanCount || "(1/5)";
-    if (resultProductName) resultProductName.textContent = data.productName || "AHM OIL MPX 1";
-
-    // Toggle valid/invalid status via CSS class — no innerHTML
-    var isValid = (data.confidence || 0) >= CONFIDENCE_THRESHOLD;
-    if (resultQrStatus) {
-        resultQrStatus.textContent = isValid ? "QR Valid" : "QR Invalid";
-        resultQrStatus.className = isValid ? "status-label-valid" : "status-label-invalid";
-    }
-    if (resultStatusIcon) {
-        resultStatusIcon.classList.toggle("status-valid", isValid);
-        resultStatusIcon.classList.toggle("status-invalid", !isValid);
-    }
-
-    hideAllScreens();
-    if (resultScreen) resultScreen.classList.remove("hidden");
 }
 
 /**
@@ -186,7 +131,6 @@ export function initHomeScreen(onStartScan) {
     var btnStartScan = document.getElementById("btn-start-scan");
     var inputApiKey = document.getElementById("input-api-key");
     var toggleSkipTutorial = document.getElementById("toggle-skip-tutorial");
-    var toggleRawResult = document.getElementById("toggle-raw-result");
 
     // Pre-fill API key from URL param
     if (inputApiKey && state.apiKey) {
@@ -198,12 +142,6 @@ export function initHomeScreen(onStartScan) {
         toggleSkipTutorial.checked = state.config.skipTutorial;
         toggleSkipTutorial.addEventListener("change", function () {
             state.config.skipTutorial = toggleSkipTutorial.checked;
-        });
-    }
-    if (toggleRawResult) {
-        toggleRawResult.checked = state.config.rawResult;
-        toggleRawResult.addEventListener("change", function () {
-            state.config.rawResult = toggleRawResult.checked;
         });
     }
 

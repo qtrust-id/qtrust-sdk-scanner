@@ -111,14 +111,10 @@ export function connectWS() {
                 dbg("ERROR: malformed result — missing data or format");
                 return;
             }
-            // Coerce confidence to a finite number, default 0 — build a new
-            // object instead of mutating the parsed payload. Preserve all other
-            // fields (e.g. bounding_box) so native SDK consumers still receive them.
-            var confidence = typeof raw.confidence === "number" ? raw.confidence : parseFloat(raw.confidence);
-            if (!isFinite(confidence)) confidence = 0;
-            var result = Object.assign({}, raw, { confidence: confidence });
+            // Pass the validated payload straight through — preserve every field
+            // (e.g. bounding_box) so native SDK consumers still receive them.
             dbg("result!");
-            if (_onResult) _onResult(result);
+            if (_onResult) _onResult(raw);
             return;
         }
         if (msg.type === "throttle" && typeof msg.fps === "number") { state.fps = msg.fps; return; }

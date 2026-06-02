@@ -6,7 +6,7 @@
 // cloud is unreachable, the page falls back to decoding frames locally with a
 // vendored zxing-wasm build (assets/zxing/). Both backends emit the SAME result
 // shape so consumers (native SDK / web SDK) don't care which produced it:
-//   { data, format, confidence, bounding_box: { x, y, width, height } }
+//   { data, format, bounding_box: { x, y, width, height } }
 
 import { state, ScanType } from "./state.js";
 import { dbg } from "./debug.js";
@@ -134,13 +134,10 @@ function toBoundingBox(pos) {
     };
 }
 
-// zxing-wasm gives no confidence score; a valid local decode is treated as
-// certain (1.0), matching how the protocol consumes the field.
 function toResult(r) {
     return {
         data: r.text,
         format: mapFormat(r.format),
-        confidence: 1,
         bounding_box: toBoundingBox(r.position),
     };
 }

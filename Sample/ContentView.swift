@@ -7,7 +7,6 @@ struct ContentView: View {
 
     @State private var scanType: ScanType = .qr
     @State private var skipTutorial = true
-    @State private var rawResult = false
     @State private var lastResult: ScanResult?
 
     enum APIStyle {
@@ -51,12 +50,6 @@ struct ContentView: View {
                                 title: "Skip Tutorial",
                                 subtitle: "Langsung ke scanner tanpa tutorial",
                                 isOn: $skipTutorial
-                            )
-                            Divider().padding(.leading, 16)
-                            toggleRow(
-                                title: "Raw Result",
-                                subtitle: "Callback data langsung tanpa halaman result",
-                                isOn: $rawResult
                             )
                         }
                     }
@@ -143,7 +136,6 @@ struct ContentView: View {
                 apiKey: apiKey,
                 scanType: scanType,
                 skipTutorial: skipTutorial,
-                rawResult: rawResult,
                 apiStyle: style,
                 onResult: { result in
                     lastResult = result

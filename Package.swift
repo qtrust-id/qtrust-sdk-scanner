@@ -1,18 +1,29 @@
 // swift-tools-version: 5.9
 import PackageDescription
 
-// GENERATED — release 1.0.0. Source manifest lives on main branch.
 let package = Package(
     name: "QTrustScanner",
-    platforms: [.iOS(.v15)],
+    // iOS is the shipping target. macOS is declared only so the platform-agnostic
+    // value types (ScanType, ScanResult, ScannerError, ScannerConfig) compile and
+    // their tests run on the host via `swift test`; the UIKit/WebView layer stays
+    // #if os(iOS)-gated.
+    platforms: [.iOS(.v15), .macOS(.v12)],
     products: [
         .library(name: "QTrustScanner", targets: ["QTrustScanner"]),
     ],
     targets: [
-        .binaryTarget(
+        .target(
             name: "QTrustScanner",
-            url: "https://github.com/syahfei-venturo/sdk-ios/releases/download/1.0.0/QTrustScanner-1.0.0.xcframework.zip",
-            checksum: "6c3fda521da0a81da3f45986d61f7dcb977aa5b4619134734835a808b7c43c72"
+            dependencies: [],
+            path: "Sources/Scanner",
+            // Bundled scanner web page (offline-capable). Single source of truth
+            // is cloud/web; kept in sync by scripts/sync-web-assets.sh.
+            resources: [.copy("Resources/web")]
+        ),
+        .testTarget(
+            name: "QTrustScannerTests",
+            dependencies: ["QTrustScanner"],
+            path: "Tests/ScannerTests"
         ),
     ]
 )

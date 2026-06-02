@@ -1,7 +1,11 @@
 {
-  "buildNumber": 202606022025,
-  "version": "2026-06-02T20:25:13Z",
+  "buildNumber": 202606022314,
+  "version": "2026-06-02T23:14:44Z",
   "files": [
+    {
+      "path": "app.bundle.js",
+      "sha256": "e885cb5650777ff8366301a4a4624f34839c25e1f1440e67635323a3190ec1f2"
+    },
     {
       "path": "assets/tutorial-1.jpg",
       "sha256": "7c5c5d45a0a0ec22bac3b76f7e92c1f6b1c9fd915d3a98ac20312e13cb74b399"
@@ -32,11 +36,11 @@
     },
     {
       "path": "index.html",
-      "sha256": "a8ecfaf31d6cd38e3a26bb74bcdf4d3b905b1703e77902eb3380031d191d864c"
+      "sha256": "ebe3ceb9cda8ee938bd07a2cc08b18531ca84ee0f2fdeeaf977feb5f62313b09"
     },
     {
       "path": "main.js",
-      "sha256": "13e991ac6bac730a89540a93c9e8885e23f0292edd364717776406e164b5acb1"
+      "sha256": "752421bafc4ca001a24486d41efd5600ef4d134d4df27fbe8585708463720c13"
     },
     {
       "path": "modules/bridge.js",
@@ -56,7 +60,7 @@
     },
     {
       "path": "modules/decode.js",
-      "sha256": "36fd407e1549d8dbb4b24031def56cb60fcda719bd9dbc41a61a89460b5d05c4"
+      "sha256": "a4892e01e78281d725ea045ebbdb6f91bb9296e428f63600e5897c197f24eaa9"
     },
     {
       "path": "modules/embed.js",
@@ -64,20 +68,20 @@
     },
     {
       "path": "modules/state.js",
-      "sha256": "76eee48e186925173eccf3b8b1f5dee6d68d6cf907d9d0e845f2ce409347dc5e"
+      "sha256": "1d882e7d0f31e72a970cdae42dd745b17c758de7dee4335de5b74c329b2d5eda"
     },
     {
       "path": "modules/ui.js",
-      "sha256": "2d754951d3f9bd31bafe209d3b4b89051e22423c9efa1fbf7522277b0d0a4355"
+      "sha256": "9a8c2dc464cbc507d793b80ca4935af13045ee151d365b8392e1307575c868aa"
     },
     {
       "path": "modules/websocket.js",
-      "sha256": "29163c2574e0873dd3478240716f105b78fbe70b605feb02614e63f68af5abef"
+      "sha256": "211b026a3497dedb4151f2047c73daa0aeaa696cebc360c2026d43e3ae2cc67a"
     },
     {
       "path": "scanner.css",
       "sha256": "8df3c34b54fa0a3ab585a4bd41f2b6d727c7cf84b6c9867bff0223be6cb9f302"
     }
   ],
-  "signature": "cYDFq4xtHUuGhI2Pyi35v0iRe+EFp/82qu8PU5z8Rtn6eMP2kDd+0UN3ze0l52ujdyInbLkjPlLoyDxrfGzADQ=="
+  "signature": "kRCILjnu8c75+mIVj5/06QX86i9vGW487A2/GN+E6nck5ecjZYemC4tbzXT/qAv8dHZXCE7cJ4Vzn7K3m7vSBQ=="
 }

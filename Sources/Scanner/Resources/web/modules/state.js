@@ -62,7 +62,6 @@ export var state = {
         theme: Theme.DARK,
         locale: Locale.ID,
         skipTutorial: false,  // SDK overrides to true via ScannerInit
-        rawResult: false,     // true = callback raw data, false = show result screen
         // Per-vendor symbology override, e.g. "PDF417|QRCode". Empty = server
         // default per scanType (PDF417 for barcode, QR family for qr).
         formats: bootParam("formats") || "",

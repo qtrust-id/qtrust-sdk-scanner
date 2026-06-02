@@ -19,22 +19,19 @@ public struct VendorConfig: Sendable {
     public let theme: ScannerTheme
     public let locale: ScannerLocale
     public let skipTutorial: Bool
-    public let rawResult: Bool
 
     public init(
         vendorId: String = "",
         textHintScan: String = "",
         theme: ScannerTheme = .dark,
         locale: ScannerLocale = .id,
-        skipTutorial: Bool = true,
-        rawResult: Bool = false
+        skipTutorial: Bool = true
     ) {
         self.vendorId = vendorId
         self.textHintScan = textHintScan
         self.theme = theme
         self.locale = locale
         self.skipTutorial = skipTutorial
-        self.rawResult = rawResult
     }
 }
 

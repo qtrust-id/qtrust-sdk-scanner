@@ -51,8 +51,6 @@
       locale: Locale.ID,
       skipTutorial: false,
       // SDK overrides to true via ScannerInit
-      rawResult: false,
-      // true = callback raw data, false = show result screen
       // Per-vendor symbology override, e.g. "PDF417|QRCode". Empty = server
       // default per scanType (PDF417 for barcode, QR family for qr).
       formats: bootParam("formats") || ""
@@ -2370,7 +2368,6 @@
     return {
       data: r2.text,
       format: mapFormat(r2.format),
-      confidence: 1,
       bounding_box: toBoundingBox(r2.position)
     };
   }
@@ -2763,11 +2760,8 @@
           dbg("ERROR: malformed result \u2014 missing data or format");
           return;
         }
-        var confidence = typeof raw.confidence === "number" ? raw.confidence : parseFloat(raw.confidence);
-        if (!isFinite(confidence)) confidence = 0;
-        var result = Object.assign({}, raw, { confidence });
         dbg("result!");
-        if (_onResult) _onResult(result);
+        if (_onResult) _onResult(raw);
         return;
       }
       if (msg.type === "throttle" && typeof msg.fps === "number") {
@@ -2860,7 +2854,6 @@
   }
 
   // modules/ui.js
-  var CONFIDENCE_THRESHOLD = 0.5;
   var homeScreen = document.getElementById("home-screen");
   var scannerContainer = document.getElementById("scanner-container");
   var tutorialScreen = document.getElementById("tutorial-screen");
@@ -2868,17 +2861,10 @@
   var homeResultSection = document.getElementById("home-result");
   var resultDataEl = document.getElementById("result-data");
   var resultFormatEl = document.getElementById("result-format");
-  var resultConfidenceEl = document.getElementById("result-confidence");
   var apiKeyError = document.getElementById("api-key-error");
   var flashOverlay = document.getElementById("flash-overlay");
   var viewfinder = document.getElementById("viewfinder");
   var scanInstructionText = document.getElementById("scan-instruction-text");
-  var resultQrStatus = document.getElementById("result-qr-status");
-  var resultStatusIcon = document.getElementById("result-status-icon");
-  var resultQrCode = document.getElementById("result-qr-code");
-  var resultSerial = document.getElementById("result-serial");
-  var resultScanCount = document.getElementById("result-scan-count");
-  var resultProductName = document.getElementById("result-product-name");
   function hideAllScreens() {
     homeScreen.classList.add("hidden");
     scannerContainer.classList.add("hidden");
@@ -2915,37 +2901,6 @@
     homeResultSection.classList.remove("hidden");
     if (resultDataEl) resultDataEl.textContent = data.data || "";
     if (resultFormatEl) resultFormatEl.textContent = data.format || "";
-    if (resultConfidenceEl) {
-      var pct = ((data.confidence || 0) * 100).toFixed(1) + "%";
-      resultConfidenceEl.textContent = pct;
-    }
-  }
-  function showResult(data) {
-    try {
-      stopCapture();
-      closeWS();
-      stopCamera();
-    } catch (err) {
-      dbg("showResult: cleanup error \u2014 " + (err ? err.message : "unknown"));
-    }
-    state.cameraReady = false;
-    state.wsAuthed = false;
-    state.scanActive = false;
-    if (resultQrCode) resultQrCode.textContent = data.data || "-";
-    if (resultSerial) resultSerial.textContent = data.serial || "213696348";
-    if (resultScanCount) resultScanCount.textContent = data.scanCount || "(1/5)";
-    if (resultProductName) resultProductName.textContent = data.productName || "AHM OIL MPX 1";
-    var isValid = (data.confidence || 0) >= CONFIDENCE_THRESHOLD;
-    if (resultQrStatus) {
-      resultQrStatus.textContent = isValid ? "QR Valid" : "QR Invalid";
-      resultQrStatus.className = isValid ? "status-label-valid" : "status-label-invalid";
-    }
-    if (resultStatusIcon) {
-      resultStatusIcon.classList.toggle("status-valid", isValid);
-      resultStatusIcon.classList.toggle("status-invalid", !isValid);
-    }
-    hideAllScreens();
-    if (resultScreen) resultScreen.classList.remove("hidden");
   }
   function initResultScreen(onScanAgain, onReport) {
     var btnScanAgain = document.getElementById("btn-scan-again");
@@ -2997,7 +2952,6 @@
     var btnStartScan = document.getElementById("btn-start-scan");
     var inputApiKey = document.getElementById("input-api-key");
     var toggleSkipTutorial = document.getElementById("toggle-skip-tutorial");
-    var toggleRawResult = document.getElementById("toggle-raw-result");
     if (inputApiKey && state.apiKey) {
       inputApiKey.value = state.apiKey;
     }
@@ -3005,12 +2959,6 @@
       toggleSkipTutorial.checked = state.config.skipTutorial;
       toggleSkipTutorial.addEventListener("change", function() {
         state.config.skipTutorial = toggleSkipTutorial.checked;
-      });
-    }
-    if (toggleRawResult) {
-      toggleRawResult.checked = state.config.rawResult;
-      toggleRawResult.addEventListener("change", function() {
-        state.config.rawResult = toggleRawResult.checked;
       });
     }
     scanTypeBtns.forEach(function(btn) {
@@ -3057,16 +3005,12 @@
   })();
   function handleResult(data) {
     showFlash();
-    if (scanRawResult) {
-      if (state.isSDKMode) {
-        bridgeResult(data);
-      } else {
-        showResultOnHome(data);
-        showHome();
-      }
-    } else {
-      showResult(data);
+    if (state.isSDKMode) {
+      bridgeResult(data);
+      return;
     }
+    showResultOnHome(data);
+    showHome();
   }
   setWSCallbacks({
     onAuthFail: function(msg) {
@@ -3078,7 +3022,6 @@
     onResult: handleResult
   });
   setDecodeCallbacks({ onResult: handleResult });
-  var scanRawResult = false;
   function startScannerFlow() {
     if (state.scanActive) {
       dbg("startScannerFlow: already active, skip");
@@ -3093,7 +3036,6 @@
     state.readySignaled = false;
     state.authRejected = false;
     state.fps = state.scanType === ScanType.BARCODE ? 10 : 5;
-    scanRawResult = state.config.rawResult;
     applyViewfinderMode();
     openCamera().then(function() {
       dbg("camera open OK");
@@ -3192,7 +3134,6 @@
       if (typeof c2.theme === "number") state.config.theme = c2.theme;
       if (typeof c2.locale === "number") state.config.locale = c2.locale;
       if (typeof c2.skipTutorial === "boolean") state.config.skipTutorial = c2.skipTutorial;
-      if (typeof c2.rawResult === "boolean") state.config.rawResult = c2.rawResult;
       if (typeof c2.formats === "string") state.config.formats = c2.formats;
       dbg("ScannerInit: config=" + JSON.stringify(state.config));
     }
@@ -3218,13 +3159,11 @@
     if (typeof c2.theme === "number") state.config.theme = c2.theme;
     if (typeof c2.locale === "number") state.config.locale = c2.locale;
     if (typeof c2.skipTutorial === "boolean") state.config.skipTutorial = c2.skipTutorial;
-    if (typeof c2.rawResult === "boolean") state.config.rawResult = c2.rawResult;
     if (typeof c2.formats === "string") state.config.formats = c2.formats;
     dbg("ScannerUpdateConfig: " + JSON.stringify(state.config));
   };
   window.ScannerSetAPIKey = function(key) {
     state.apiKey = key;
-    scanRawResult = state.config.rawResult;
     if (state.serverUrl) {
       connectWS();
     }

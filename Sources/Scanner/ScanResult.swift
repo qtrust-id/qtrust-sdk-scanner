@@ -3,11 +3,10 @@ import Foundation
 public struct ScanResult: Decodable, Sendable {
     public let data: String
     public let format: String
-    public let confidence: Double
     public let boundingBox: BoundingBox
 
     enum CodingKeys: String, CodingKey {
-        case data, format, confidence
+        case data, format
         case boundingBox = "bounding_box"
     }
 }

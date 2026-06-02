@@ -8,7 +8,7 @@ A minimal SwiftUI sample app demonstrating all three API styles of the Scanner S
 - **Stream API**: `for await result in scanner.stream(in:, type:) { }`
 - **One-Shot API**: `let result = try await scanner.scan(in:, type:)`
 - **QR Code & Barcode** scanning support
-- **Real-time result display** with confidence score and bounding box
+- **Real-time result display** with bounding box
 
 ## Setup Instructions
 
@@ -115,7 +115,6 @@ After a successful scan, the app shows:
 
 - **Data**: The decoded content (copyable)
 - **Format**: The barcode/QR format
-- **Confidence**: Detection confidence score (0–100%)
 - **Bounding Box**: Location and size of scan in the view
 
 ## Troubleshooting

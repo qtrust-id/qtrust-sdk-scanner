@@ -12,7 +12,6 @@ final class ScannerConfigTests: XCTestCase {
         XCTAssertEqual(config.vendorConfig.theme, .dark)
         XCTAssertEqual(config.vendorConfig.locale, .id)
         XCTAssertTrue(config.vendorConfig.skipTutorial)
-        XCTAssertFalse(config.vendorConfig.rawResult)
     }
 
     func testCustomValues() {
@@ -21,8 +20,7 @@ final class ScannerConfigTests: XCTestCase {
             textHintScan: "Scan QR",
             theme: .light,
             locale: .en,
-            skipTutorial: false,
-            rawResult: true
+            skipTutorial: false
         )
         let config = ScannerConfig(
             apiKey: "sk_live_test",
@@ -37,7 +35,6 @@ final class ScannerConfigTests: XCTestCase {
         XCTAssertEqual(config.vendorConfig.theme, .light)
         XCTAssertEqual(config.vendorConfig.locale, .en)
         XCTAssertFalse(config.vendorConfig.skipTutorial)
-        XCTAssertTrue(config.vendorConfig.rawResult)
     }
 
     func testVendorConfigDefaults() {
@@ -47,7 +44,6 @@ final class ScannerConfigTests: XCTestCase {
         XCTAssertEqual(vc.theme, .dark)
         XCTAssertEqual(vc.locale, .id)
         XCTAssertTrue(vc.skipTutorial)
-        XCTAssertFalse(vc.rawResult)
     }
 
     func testThemeRawValues() {
