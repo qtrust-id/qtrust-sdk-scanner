@@ -1,0 +1,83 @@
+{
+  "buildNumber": 202606022025,
+  "version": "2026-06-02T20:25:13Z",
+  "files": [
+    {
+      "path": "assets/tutorial-1.jpg",
+      "sha256": "7c5c5d45a0a0ec22bac3b76f7e92c1f6b1c9fd915d3a98ac20312e13cb74b399"
+    },
+    {
+      "path": "assets/tutorial-2.jpg",
+      "sha256": "fadcbd54865fb2395678fa3e163d8fe3725ec51bb419c8065adcf86565378685"
+    },
+    {
+      "path": "assets/tutorial-3.jpg",
+      "sha256": "0e40bf1e4194b18433cd5880272195012836b10a23ccc6ecb9700313f84a8571"
+    },
+    {
+      "path": "assets/zxing/reader/index.js",
+      "sha256": "e5fe67c606c5b80f2cc12134aa74c44a08664877ed67d7f6364d252d7ff42018"
+    },
+    {
+      "path": "assets/zxing/share.js",
+      "sha256": "1f3a4b9a694c4ab1db482ebdda8a2f23a2af40f7d16ca1e16105b7aec18bf262"
+    },
+    {
+      "path": "assets/zxing/zxing_reader.wasm",
+      "sha256": "b03d35cd265123b9f75a0c476c204714663a1e85ba908acc3f50eae7824dfcf6"
+    },
+    {
+      "path": "capture-worker.js",
+      "sha256": "8d46f972cefdf01b888fd74a333e88589a5024458e503bea5807ff1babb79d9e"
+    },
+    {
+      "path": "index.html",
+      "sha256": "a8ecfaf31d6cd38e3a26bb74bcdf4d3b905b1703e77902eb3380031d191d864c"
+    },
+    {
+      "path": "main.js",
+      "sha256": "13e991ac6bac730a89540a93c9e8885e23f0292edd364717776406e164b5acb1"
+    },
+    {
+      "path": "modules/bridge.js",
+      "sha256": "375560f53aa55f5dafe1496dafbb9650986b78301dd26fd130bf97d753476786"
+    },
+    {
+      "path": "modules/camera.js",
+      "sha256": "e5ed2d701eaa751ca284c512871d635a62b1487965fb911880988d4a7675e47f"
+    },
+    {
+      "path": "modules/capture.js",
+      "sha256": "d3b2854c8051f8dc477df6bf31631047a55109fdc5bbc2fd4ba81f34d4261897"
+    },
+    {
+      "path": "modules/debug.js",
+      "sha256": "ebf2fc95500224e29309a8a6500518f640795d7a984dfad6e460ed19d7d47142"
+    },
+    {
+      "path": "modules/decode.js",
+      "sha256": "36fd407e1549d8dbb4b24031def56cb60fcda719bd9dbc41a61a89460b5d05c4"
+    },
+    {
+      "path": "modules/embed.js",
+      "sha256": "fb8b2033d2c1912ab8cb1fd92a1323c0fe10567be9462aac0298babaef3b4992"
+    },
+    {
+      "path": "modules/state.js",
+      "sha256": "76eee48e186925173eccf3b8b1f5dee6d68d6cf907d9d0e845f2ce409347dc5e"
+    },
+    {
+      "path": "modules/ui.js",
+      "sha256": "2d754951d3f9bd31bafe209d3b4b89051e22423c9efa1fbf7522277b0d0a4355"
+    },
+    {
+      "path": "modules/websocket.js",
+      "sha256": "29163c2574e0873dd3478240716f105b78fbe70b605feb02614e63f68af5abef"
+    },
+    {
+      "path": "scanner.css",
+      "sha256": "8df3c34b54fa0a3ab585a4bd41f2b6d727c7cf84b6c9867bff0223be6cb9f302"
+    }
+  ],
+  "signature": "cYDFq4xtHUuGhI2Pyi35v0iRe+EFp/82qu8PU5z8Rtn6eMP2kDd+0UN3ze0l52ujdyInbLkjPlLoyDxrfGzADQ=="
+}

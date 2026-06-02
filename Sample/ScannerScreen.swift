@@ -89,6 +89,16 @@ private struct DirectWebView: UIViewRepresentable {
             forMainFrameOnly: true
         )
         contentController.addUserScript(blackBg)
+
+        // Boot config — a file:// URL cannot reliably carry a query string in
+        // WKWebView, so the page reads mode/type from this documentStart global
+        // instead of location.search. mode=sdk skips the home screen.
+        let bootScript = WKUserScript(
+            source: "window.__SCANNER_BOOT__={mode:\"sdk\",type:\(scanType.rawValue)};",
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        )
+        contentController.addUserScript(bootScript)
         config.userContentController = contentController
 
         let wv = FullBleedWebView(frame: .zero, configuration: config)
@@ -117,17 +127,24 @@ private struct DirectWebView: UIViewRepresentable {
         ])
         container.addSubview(overlay)
         context.coordinator.loadingOverlay = overlay
-
-        // Load from cloud HTTPS (secure context — getUserMedia works)
-        let baseUrl = "https://scanner.noersy.my.id"
-        let urlStr = "\(baseUrl)/?type=\(scanType.rawValue)&key=\(apiKey)&mode=sdk"
-        if let url = URL(string: urlStr) {
-            wv.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData))
-            print("[DirectWebView] Loading: \(urlStr)")
-        }
-
         context.coordinator.webView = wv
         context.coordinator.container = container
+
+        // Load the offline-capable bundled scanner page from the SDK. file:// is
+        // a secure context in WKWebView, so getUserMedia works with no network.
+        // The page is a single classic-script bundle (no ES modules, which
+        // WKWebView blocks under file://). The cloud serverUrl/API key are injected
+        // after load via ScannerInit (see didFinish), keeping the scanner
+        // online-primary with an on-device decode fallback when cloud is unreachable.
+        if let webDir = ScannerAssets.webDirectoryURL, let indexURL = ScannerAssets.indexURL {
+            wv.loadFileURL(indexURL, allowingReadAccessTo: webDir)
+            print("[DirectWebView] Loading bundled: \(indexURL.path)")
+        } else {
+            print("[DirectWebView] bundled scanner assets missing")
+            DispatchQueue.main.async {
+                self.onError("Bundled scanner assets missing")
+            }
+        }
 
         // Timeout fallback — reveal after 15s even if onReady never fires
         DispatchQueue.main.asyncAfter(deadline: .now() + 15) { [weak wv] in

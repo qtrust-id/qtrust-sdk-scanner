@@ -110,15 +110,33 @@ public final class ScannerView: UIView {
         self.cameraDelegate = camDelegate
         wv.uiDelegate = camDelegate
 
-        // Load scanner page from cloud HTTPS (secure context — getUserMedia works)
-        // mode=sdk skips home screen, skip_tutorial=1 bypasses tutorial
-        let urlString = "\(config.baseUrl)/?type=\(scanType.rawValue)&key=\(config.apiKey)&mode=sdk&skip_tutorial=1"
-        logger.info("performLoad: loading URL \(urlString)")
-        guard let url = URL(string: urlString) else {
-            logger.error("performLoad: invalid URL \(urlString)")
-            bridge.onError?(.connectionFailed("invalid base URL: \(config.baseUrl)"))
+        // Load the BUNDLED scanner page (offline-capable). file:// in WKWebView is
+        // a secure context, so getUserMedia and ES module imports both work. The
+        // cloud URL/API key are injected via ScannerInit (see PageLoadHandler) so
+        // the page still connects to the cloud WebSocket first and only falls back
+        // to on-device decoding when offline. mode=sdk skips the home screen.
+        // Effective bundle = newest verified OTA cache, else the in-SDK seed
+        // (resolved once per process by ScannerAssets).
+        guard let webDirURL = ScannerAssets.webDirectoryURL else {
+            logger.error("performLoad: bundled web resources not found")
+            bridge.onError?(.connectionFailed("bundled scanner assets missing"))
             return
         }
+        let url = webDirURL.appendingPathComponent("index.html")
+        logger.info("performLoad: loading bundled URL \(url.absoluteString)")
+
+        // Boot config — a file:// URL cannot reliably carry a query string
+        // (WKWebView fails the navigation), so the page reads mode/type from this
+        // documentStart-injected global instead of location.search. The API key
+        // and cloud serverUrl still arrive later via ScannerInit. mode=sdk skips
+        // the home screen.
+        let bootJS = "window.__SCANNER_BOOT__={mode:\"sdk\",type:\(scanType.rawValue)};"
+        let bootScript = WKUserScript(
+            source: bootJS,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        )
+        wv.configuration.userContentController.addUserScript(bootScript)
 
         let handler = PageLoadHandler(
             onLoad: { [weak wv] in
@@ -141,8 +159,8 @@ public final class ScannerView: UIView {
         self.pageLoadHandler = handler
         wv.navigationDelegate = handler
 
-        wv.load(URLRequest(url: url))
-        logger.info("performLoad: URLRequest sent")
+        wv.loadFileURL(url, allowingReadAccessTo: webDirURL)
+        logger.info("performLoad: loadFileURL sent")
     }
 
     /// Reveals the WebView and fades out the loading overlay simultaneously.
@@ -191,20 +209,30 @@ public final class ScannerView: UIView {
     }
 
     /// Build ScannerInit JS call with int enums and vendor config.
+    /// The payload is JSON-encoded so every string value (key, serverUrl, and the
+    /// vendor fields, which may come from a server-side config) is fully escaped —
+    /// hand-rolled single-quote escaping could break the literal or inject code.
     private static func buildInitJs(config: ScannerConfig, scanType: ScanType) -> String {
-        let key = config.apiKey.replacingOccurrences(of: "'", with: "\\'")
-        let serverUrl = config.baseUrl.replacingOccurrences(of: "'", with: "\\'")
         let vc = config.vendorConfig
-        let vendorId = vc.vendorId.replacingOccurrences(of: "'", with: "\\'")
-        let textHint = vc.textHintScan.replacingOccurrences(of: "'", with: "\\'")
-        let skipTut = vc.skipTutorial ? "true" : "false"
-        let rawRes = vc.rawResult ? "true" : "false"
-        return """
-        window.ScannerInit({key: '\(key)', serverUrl: '\(serverUrl)', type: \(scanType.rawValue), \
-        config: {vendorId: '\(vendorId)', textHintScan: '\(textHint)', \
-        theme: \(vc.theme.rawValue), locale: \(vc.locale.rawValue), \
-        skipTutorial: \(skipTut), rawResult: \(rawRes)}});
-        """
+        let payload: [String: Any] = [
+            "key": config.apiKey,
+            "serverUrl": config.baseUrl,
+            "type": scanType.rawValue,
+            "config": [
+                "vendorId": vc.vendorId,
+                "textHintScan": vc.textHintScan,
+                "theme": vc.theme.rawValue,
+                "locale": vc.locale.rawValue,
+                "skipTutorial": vc.skipTutorial,
+                "rawResult": vc.rawResult,
+            ] as [String: Any],
+        ]
+        guard let data = try? JSONSerialization.data(withJSONObject: payload),
+              let json = String(data: data, encoding: .utf8) else {
+            logger.error("buildInitJs: failed to encode payload")
+            return ""
+        }
+        return "window.ScannerInit(\(json));"
     }
 
     func tearDown() {

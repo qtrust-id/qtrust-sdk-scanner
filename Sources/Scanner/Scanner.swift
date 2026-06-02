@@ -31,7 +31,7 @@ public final class Scanner: @unchecked Sendable {
 
     // Style 2: AsyncStream
     public func stream(in view: ScannerView, type: ScanType) -> AsyncStream<ScanResult> {
-        AsyncStream { continuation in
+        return AsyncStream { continuation in
             let bridge = ScannerBridge()
             bridge.onResult = { result in continuation.yield(result) }
             bridge.onError = { _ in continuation.finish() }
@@ -45,7 +45,7 @@ public final class Scanner: @unchecked Sendable {
 
     // Style 3: async/await
     public func scan(in view: ScannerView, type: ScanType) async throws -> ScanResult {
-        try await withCheckedThrowingContinuation { continuation in
+        return try await withCheckedThrowingContinuation { continuation in
             let bridge = ScannerBridge()
             var resumed = false
 
