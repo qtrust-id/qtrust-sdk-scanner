@@ -8,7 +8,7 @@ enum WebViewFactory {
         config.mediaTypesRequiringUserActionForPlayback = []
 
         let contentController = WKUserContentController()
-        contentController.add(bridge, name: "scannerBridge")
+        contentController.add(WeakScriptMessageHandler(bridge), name: "scannerBridge")
 
         // Inject console.log/error/warn capture → native logger
         let consoleCapture = WKUserScript(source: """

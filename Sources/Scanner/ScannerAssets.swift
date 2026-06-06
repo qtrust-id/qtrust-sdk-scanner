@@ -10,10 +10,8 @@ import Foundation
 /// zxing decoder and its wasm are inlined, so scanning works fully offline.
 ///
 /// Hosts that drive their own `WKWebView` — instead of using `Scanner`/
-/// `ScannerView` — load `indexURL` with read access to `webDirectoryURL`. The
-/// cloud server URL/API key are still injected at runtime via `ScannerInit`, so
-/// the scanner stays online-primary with the on-device decode fallback when the
-/// cloud is unreachable.
+/// `ScannerView` — load `indexURL` with read access to `webDirectoryURL`.
+/// Scanning is fully on-device; no network or server URL is involved.
 public enum ScannerAssets {
     /// Directory holding the bundled web assets. Pass to
     /// `WKWebView.loadFileURL(_:allowingReadAccessTo:)`. `nil` only if the bundle

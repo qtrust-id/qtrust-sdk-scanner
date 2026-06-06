@@ -1,0 +1,940 @@
+{
+  "builtTestProducts" : [
+    {
+      "binaryPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.xctest/Contents/MacOS/QTrustScannerPackageTests",
+      "packagePath" : "/private/tmp/qtrust-sdk-scanner",
+      "productName" : "QTrustScannerPackageTests"
+    }
+  ],
+  "copyCommands" : {
+    "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner_QTrustScanner.bundle/web" : {
+      "inputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Resources/web"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner_QTrustScanner.bundle/web"
+        }
+      ]
+    }
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.QTrustScanner-arm64-apple-macosx15.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/sources",
+      "importPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/ScannerBridge.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/WeakScriptMessageHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/WebViewFactory.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScanResult.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScanType.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Scanner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerAssets.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerConfig.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerViewRepresentable.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/DerivedSources/resource_bundle_accessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<QTrustScanner-arm64-apple-macosx15.0-debug.module-resources>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "QTrustScanner",
+      "moduleOutputPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules/QTrustScanner.swiftmodule",
+      "objects" : [
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerBridge.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/WeakScriptMessageHandler.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/WebViewFactory.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScanResult.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScanType.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/Scanner.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerAssets.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerConfig.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerError.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerView.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerViewRepresentable.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/resource_bundle_accessor.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx12.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE",
+        "-module-cache-path",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/include/QTrustScanner-Swift.h",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "qtrust_sdk_scanner"
+      ],
+      "outputFileMapPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerBridge.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/WeakScriptMessageHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/WebViewFactory.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScanResult.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScanType.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/Scanner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerAssets.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerConfig.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerViewRepresentable.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules/QTrustScanner.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/ScannerBridge.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/WeakScriptMessageHandler.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/WebViewFactory.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScanResult.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScanType.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Scanner.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerAssets.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerConfig.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerError.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerView.swift",
+        "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerViewRepresentable.swift",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/DerivedSources/resource_bundle_accessor.swift"
+      ],
+      "tempsPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.QTrustScannerPackageTests-arm64-apple-macosx15.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/sources",
+      "importPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.derived/runner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules/QTrustScannerTests.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "QTrustScannerPackageTests",
+      "moduleOutputPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules/QTrustScannerPackageTests.swiftmodule",
+      "objects" : [
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/runner.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx12.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/include/QTrustScannerPackageTests-Swift.h",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "qtrust_sdk_scanner"
+      ],
+      "outputFileMapPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules/QTrustScannerPackageTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.derived/runner.swift"
+      ],
+      "tempsPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.QTrustScannerTests-arm64-apple-macosx15.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/sources",
+      "importPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanResultTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanTypeTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerBridgeTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerConfigTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerErrorTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules/QTrustScanner.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "QTrustScannerTests",
+      "moduleOutputPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules/QTrustScannerTests.swiftmodule",
+      "objects" : [
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanResultTests.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanTypeTests.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerBridgeTests.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerConfigTests.swift.o",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerErrorTests.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "qtrust_sdk_scanner"
+      ],
+      "outputFileMapPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanResultTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanTypeTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerBridgeTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerConfigTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerErrorTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules/QTrustScannerTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanResultTests.swift",
+        "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanTypeTests.swift",
+        "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerBridgeTests.swift",
+        "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerConfigTests.swift",
+        "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerErrorTests.swift"
+      ],
+      "tempsPath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "QTrustScanner" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "QTrustScanner",
+      "-package-name",
+      "qtrust_sdk_scanner",
+      "-c",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/ScannerBridge.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/WeakScriptMessageHandler.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/WebViewFactory.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScanResult.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScanType.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Scanner.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerAssets.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerConfig.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerError.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerView.swift",
+      "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerViewRepresentable.swift",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/DerivedSources/resource_bundle_accessor.swift",
+      "-I",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx12.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE",
+      "-module-cache-path",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/include/QTrustScanner-Swift.h",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "qtrust_sdk_scanner",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "QTrustScannerPackageTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "QTrustScannerPackageTests",
+      "-package-name",
+      "qtrust_sdk_scanner",
+      "-c",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.derived/runner.swift",
+      "-I",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx12.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/include/QTrustScannerPackageTests-Swift.h",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "qtrust_sdk_scanner",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "QTrustScannerTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "QTrustScannerTests",
+      "-package-name",
+      "qtrust_sdk_scanner",
+      "-c",
+      "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanResultTests.swift",
+      "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanTypeTests.swift",
+      "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerBridgeTests.swift",
+      "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerConfigTests.swift",
+      "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerErrorTests.swift",
+      "-I",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "qtrust_sdk_scanner",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "QTrustScanner" : [
+
+    ],
+    "QTrustScannerPackageTests" : [
+      "QTrustScannerTests",
+      "QTrustScanner"
+    ],
+    "QTrustScannerTests" : [
+      "QTrustScanner"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+    "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.derived/runner.swift" : {
+      "inputs" : [
+
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.derived/runner.swift"
+        }
+      ]
+    }
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/ScannerBridge.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/WeakScriptMessageHandler.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Internal/WebViewFactory.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScanResult.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScanType.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/Scanner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerAssets.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerConfig.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Sources/Scanner/ScannerViewRepresentable.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/DerivedSources/resource_bundle_accessor.swift"
+        }
+      ],
+      "outputFilePath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/sources"
+    },
+    "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.derived/runner.swift"
+        }
+      ],
+      "outputFilePath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/sources"
+    },
+    "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScanResult.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScanType.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/Scanner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerAssets.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerBridge.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerConfig.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/ScannerViewRepresentable.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/WeakScriptMessageHandler.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/WebViewFactory.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanResultTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanTypeTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerBridgeTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerConfigTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerErrorTests.swift.o"
+        }
+      ],
+      "outputFilePath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerPackageTests.product/Objects.LinkFileList"
+    },
+    "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanResultTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanTypeTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerBridgeTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerConfigTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerErrorTests.swift"
+        }
+      ],
+      "outputFilePath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/sources"
+    },
+    "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

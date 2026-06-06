@@ -35,20 +35,17 @@ public struct VendorConfig: Sendable {
     }
 }
 
+/// Configuration for a scanner session.
+///
+/// Scanning runs fully on-device — no server URL is required.
 public struct ScannerConfig: Sendable {
-    public let apiKey: String
-    public let baseUrl: String
     public let timeout: TimeInterval
     public let vendorConfig: VendorConfig
 
     public init(
-        apiKey: String,
-        baseUrl: String = "https://scan.qtrust.id",
         timeout: TimeInterval = 30,
         vendorConfig: VendorConfig = VendorConfig()
     ) {
-        self.apiKey = apiKey
-        self.baseUrl = baseUrl
         self.timeout = timeout
         self.vendorConfig = vendorConfig
     }

@@ -49,17 +49,7 @@ Or in Xcode:
 2. Add key: `Privacy - Camera Usage Description`
 3. Value: `This app needs camera access to scan QR codes and barcodes`
 
-### 5. Configure API Key
-
-In `ContentView.swift`, replace the placeholder:
-
-```swift
-private let apiKey = "sk_live_your_api_key_here"
-```
-
-With your actual Scanner SDK API key from the qtrust dashboard.
-
-### 6. Run on Device
+### 5. Run on Device
 
 - Build and run on a physical iOS device (camera required)
 - Select a scan type (QR or Barcode)
@@ -124,9 +114,8 @@ After a successful scan, the app shows:
 - Go to Settings > ScannerSample > Camera and enable
 
 ### Scanner Not Starting
-- Ensure API key is valid in `ContentView.swift`
 - Run on a physical device (simulator camera is limited)
-- Check network connectivity
+- Scanning is fully on-device — no network required
 
 ### Build Errors
 - Verify Scanner package is added as dependency
@@ -136,7 +125,6 @@ After a successful scan, the app shows:
 ## Next Steps
 
 - Integrate into your production app
-- Replace the test API key with your actual key
 - Customize result handling and UI
 - Add error recovery and retry logic
 

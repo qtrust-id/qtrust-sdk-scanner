@@ -2,9 +2,6 @@ import SwiftUI
 import QTrustScanner
 
 struct ContentView: View {
-    // Replace with your actual API key
-    private let apiKey = "sk_live_test"
-
     @State private var scanType: ScanType = .qr
     @State private var skipTutorial = true
     @State private var lastResult: ScanResult?
@@ -24,7 +21,7 @@ struct ContentView: View {
                         Text("QTrust Scanner")
                             .font(.system(size: 28, weight: .bold))
                             .foregroundColor(Color(.label))
-                        Text("Cloud-based QR & Barcode Scanner")
+                        Text("On-device QR & Barcode Scanner")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -133,7 +130,6 @@ struct ContentView: View {
     private func apiStyleButton(title: String, subtitle: String, color: Color, style: APIStyle) -> some View {
         NavigationLink(
             destination: ScannerScreen(
-                apiKey: apiKey,
                 scanType: scanType,
                 skipTutorial: skipTutorial,
                 apiStyle: style,

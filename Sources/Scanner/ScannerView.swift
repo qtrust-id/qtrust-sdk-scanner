@@ -6,6 +6,7 @@ import os.log
 
 private let logger = Logger(subsystem: "id.qtrust.scanner", category: "ScannerView")
 
+@MainActor
 public final class ScannerView: UIView {
     private(set) var webView: WKWebView?
     private var bridge: ScannerBridge?
@@ -14,7 +15,7 @@ public final class ScannerView: UIView {
     private var pendingLoad: (() -> Void)?
     private var loadingOverlay: UIView?
 
-    private static let loadingDelayMs: TimeInterval = 0.5
+    private static let loadingDelaySeconds: TimeInterval = 0.5
     private static let loadingTimeoutSec: TimeInterval = 15.0
     private var loadingTimer: DispatchWorkItem?
 
@@ -99,7 +100,7 @@ public final class ScannerView: UIView {
         // Reveal WebView + hide loading when scanner is fully ready
         let originalOnReady = bridge.onReady
         bridge.onReady = { [weak self] in
-            DispatchQueue.main.asyncAfter(deadline: .now() + Self.loadingDelayMs) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.loadingDelaySeconds) {
                 self?.revealWebView()
             }
             originalOnReady?()
@@ -110,11 +111,9 @@ public final class ScannerView: UIView {
         self.cameraDelegate = camDelegate
         wv.uiDelegate = camDelegate
 
-        // Load the BUNDLED scanner page (offline-capable). file:// in WKWebView is
-        // a secure context, so getUserMedia and ES module imports both work. The
-        // cloud URL/API key are injected via ScannerInit (see PageLoadHandler) so
-        // the page still connects to the cloud WebSocket first and only falls back
-        // to on-device decoding when offline. mode=sdk skips the home screen.
+        // Load the BUNDLED scanner page. file:// in WKWebView is a secure context,
+        // so getUserMedia works. Scanning runs fully on-device (zxing-wasm) — no
+        // network, no server URL. mode=sdk skips the home screen.
         // Effective bundle = newest verified OTA cache, else the in-SDK seed
         // (resolved once per process by ScannerAssets).
         guard let webDirURL = ScannerAssets.webDirectoryURL else {
@@ -127,8 +126,7 @@ public final class ScannerView: UIView {
 
         // Boot config — a file:// URL cannot reliably carry a query string
         // (WKWebView fails the navigation), so the page reads mode/type from this
-        // documentStart-injected global instead of location.search. The API key
-        // and cloud serverUrl still arrive later via ScannerInit. mode=sdk skips
+        // documentStart-injected global instead of location.search. mode=sdk skips
         // the home screen.
         let bootJS = "window.__SCANNER_BOOT__={mode:\"sdk\",type:\(scanType.rawValue)};"
         let bootScript = WKUserScript(
@@ -136,12 +134,19 @@ public final class ScannerView: UIView {
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
+        // Remove any previously injected user scripts before adding the boot script
+        // to guarantee exactly one __SCANNER_BOOT__ injection per WKWebView instance.
+        wv.configuration.userContentController.removeAllUserScripts()
         wv.configuration.userContentController.addUserScript(bootScript)
 
         let handler = PageLoadHandler(
-            onLoad: { [weak wv] in
+            onLoad: { [weak wv, weak bridge] in
                 logger.info("PageLoadHandler: page loaded, calling ScannerInit")
-                let js = Self.buildInitJs(config: config, scanType: scanType)
+                guard let js = Self.buildInitJs(config: config, scanType: scanType) else {
+                    logger.error("PageLoadHandler: aborting — ScannerInit payload could not be built")
+                    bridge?.onError?(.serverError("failed to build scanner init payload"))
+                    return
+                }
                 wv?.evaluateJavaScript(js) { _, error in
                     if let error {
                         logger.error("JS eval error: \(error.localizedDescription)")
@@ -209,14 +214,14 @@ public final class ScannerView: UIView {
     }
 
     /// Build ScannerInit JS call with int enums and vendor config.
-    /// The payload is JSON-encoded so every string value (key, serverUrl, and the
-    /// vendor fields, which may come from a server-side config) is fully escaped —
-    /// hand-rolled single-quote escaping could break the literal or inject code.
-    private static func buildInitJs(config: ScannerConfig, scanType: ScanType) -> String {
+    /// The payload is JSON-encoded so every vendor string value (which may come
+    /// from a server-side config) is fully escaped — hand-rolled single-quote
+    /// escaping could break the literal or inject code.
+    ///
+    /// Returns `nil` on encode failure; callers should surface that via `bridge.onError`.
+    private static func buildInitJs(config: ScannerConfig, scanType: ScanType) -> String? {
         let vc = config.vendorConfig
         let payload: [String: Any] = [
-            "key": config.apiKey,
-            "serverUrl": config.baseUrl,
             "type": scanType.rawValue,
             "config": [
                 "vendorId": vc.vendorId,
@@ -229,7 +234,7 @@ public final class ScannerView: UIView {
         guard let data = try? JSONSerialization.data(withJSONObject: payload),
               let json = String(data: data, encoding: .utf8) else {
             logger.error("buildInitJs: failed to encode payload")
-            return ""
+            return nil
         }
         return "window.ScannerInit(\(json));"
     }
@@ -275,15 +280,7 @@ private final class PageLoadHandler: NSObject, WKNavigationDelegate {
            httpResponse.statusCode >= 400 {
             logger.error("WKNav: HTTP \(httpResponse.statusCode)")
             receivedHTTPError = true
-            let message: String
-            switch httpResponse.statusCode {
-            case 401:
-                message = "Invalid or missing API key"
-            case 403:
-                message = "Access forbidden"
-            default:
-                message = "Server error (HTTP \(httpResponse.statusCode))"
-            }
+            let message = "Failed to load scanner (HTTP \(httpResponse.statusCode))"
             // Allow the response so WebView doesn't show blank — error page will render
             decisionHandler(.allow)
             onError?(NSError(
@@ -330,8 +327,10 @@ private final class CameraPermissionDelegate: NSObject, WKUIDelegate {
         type: WKMediaCaptureType,
         decisionHandler: @escaping (WKPermissionDecision) -> Void
     ) {
-        logger.info("CameraPermission: granting \(String(describing: type))")
-        decisionHandler(.grant)
+        // Only grant camera access — deny microphone and any future media types.
+        let decision: WKPermissionDecision = (type == .camera) ? .grant : .deny
+        logger.info("CameraPermission: \(type == .camera ? "granting" : "denying") \(String(describing: type))")
+        decisionHandler(decision)
     }
 }
 #endif

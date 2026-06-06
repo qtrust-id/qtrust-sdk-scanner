@@ -6,34 +6,47 @@ import os.log
 
 private let logger = Logger(subsystem: "id.qtrust.scanner", category: "ScannerBridge")
 
-final class ScannerBridge: NSObject, WKScriptMessageHandler, @unchecked Sendable {
+/// Bridge between the embedded WKWebView and the native scanner API.
+///
+/// All callbacks (`onResult`, `onError`, `onReady`, `onClose`) are guaranteed
+/// to be invoked on the main actor — WKScriptMessageHandler delivers messages on
+/// the main thread and every dispatch below hops to main explicitly.
+@MainActor
+final class ScannerBridge: NSObject, WKScriptMessageHandler {
     var onResult: ((ScanResult) -> Void)?
     var onError: ((ScannerError) -> Void)?
     var onReady: (() -> Void)?
+    var onClose: (() -> Void)?
 
     private let decoder = JSONDecoder()
 
-    func userContentController(
+    nonisolated func userContentController(
         _ userContentController: WKUserContentController,
         didReceive message: WKScriptMessage
     ) {
         guard let body = message.body as? [String: Any],
               let type = body["type"] as? String else { return }
 
+        let capturedBody = body
+        Task { @MainActor in
+            self.handle(type: type, body: capturedBody)
+        }
+    }
+
+    private func handle(type: String, body: [String: Any]) {
         switch type {
         case "result":
             handleResult(body["data"])
         case "error":
             let msg = body["message"] as? String ?? "unknown error"
             logger.error("Bridge error: \(msg)")
-            DispatchQueue.main.async { [weak self] in
-                self?.onError?(.serverError(msg))
-            }
+            onError?(.serverError(msg))
         case "ready":
             logger.info("Bridge: ready")
-            DispatchQueue.main.async { [weak self] in
-                self?.onReady?()
-            }
+            onReady?()
+        case "close":
+            logger.info("Bridge: close")
+            onClose?()
         case "console":
             let level = body["level"] as? String ?? "log"
             let msg = body["message"] as? String ?? ""
@@ -42,6 +55,8 @@ final class ScannerBridge: NSObject, WKScriptMessageHandler, @unchecked Sendable
                 logger.error("[JS] \(msg)")
             case "warn":
                 logger.warning("[JS] \(msg)")
+            case "debug":
+                logger.debug("[JS] \(msg)")
             default:
                 logger.info("[JS] \(msg)")
             }
@@ -54,21 +69,18 @@ final class ScannerBridge: NSObject, WKScriptMessageHandler, @unchecked Sendable
         guard let dict = data,
               let jsonData = try? JSONSerialization.data(withJSONObject: dict),
               let result = try? decoder.decode(ScanResult.self, from: jsonData) else {
-            DispatchQueue.main.async { [weak self] in
-                self?.onError?(.serverError("failed to parse result"))
-            }
+            onError?(.serverError("failed to parse result"))
             return
         }
         logger.info("Bridge result: \(result.data)")
-        DispatchQueue.main.async { [weak self] in
-            self?.onResult?(result)
-        }
+        onResult?(result)
     }
 }
 #else
-final class ScannerBridge: @unchecked Sendable {
+final class ScannerBridge {
     var onResult: ((ScanResult) -> Void)?
     var onError: ((ScannerError) -> Void)?
     var onReady: (() -> Void)?
+    var onClose: (() -> Void)?
 }
 #endif

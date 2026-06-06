@@ -3,9 +3,7 @@ import XCTest
 
 final class ScannerConfigTests: XCTestCase {
     func testDefaults() {
-        let config = ScannerConfig(apiKey: "sk_live_test")
-        XCTAssertEqual(config.apiKey, "sk_live_test")
-        XCTAssertEqual(config.baseUrl, "https://scan.qtrust.id")
+        let config = ScannerConfig()
         XCTAssertEqual(config.timeout, 30)
         XCTAssertEqual(config.vendorConfig.vendorId, "")
         XCTAssertEqual(config.vendorConfig.textHintScan, "")
@@ -23,12 +21,9 @@ final class ScannerConfigTests: XCTestCase {
             skipTutorial: false
         )
         let config = ScannerConfig(
-            apiKey: "sk_live_test",
-            baseUrl: "https://custom.host",
             timeout: 60,
             vendorConfig: vc
         )
-        XCTAssertEqual(config.baseUrl, "https://custom.host")
         XCTAssertEqual(config.timeout, 60)
         XCTAssertEqual(config.vendorConfig.vendorId, "vendor_ahm")
         XCTAssertEqual(config.vendorConfig.textHintScan, "Scan QR")

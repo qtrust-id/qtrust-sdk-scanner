@@ -1,0 +1,40 @@
+{
+  "": {
+    "swift-dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/master.swiftdeps"
+  },
+  "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanResultTests.swift": {
+    "dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanResultTests.d",
+    "object": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanResultTests.swift.o",
+    "swiftmodule": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanResultTests~partial.swiftmodule",
+    "swift-dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanResultTests.swiftdeps",
+    "diagnostics": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanResultTests.dia"
+  },
+  "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScanTypeTests.swift": {
+    "dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanTypeTests.d",
+    "object": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanTypeTests.swift.o",
+    "swiftmodule": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanTypeTests~partial.swiftmodule",
+    "swift-dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanTypeTests.swiftdeps",
+    "diagnostics": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScanTypeTests.dia"
+  },
+  "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerBridgeTests.swift": {
+    "dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerBridgeTests.d",
+    "object": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerBridgeTests.swift.o",
+    "swiftmodule": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerBridgeTests~partial.swiftmodule",
+    "swift-dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerBridgeTests.swiftdeps",
+    "diagnostics": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerBridgeTests.dia"
+  },
+  "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerConfigTests.swift": {
+    "dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerConfigTests.d",
+    "object": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerConfigTests.swift.o",
+    "swiftmodule": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerConfigTests~partial.swiftmodule",
+    "swift-dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerConfigTests.swiftdeps",
+    "diagnostics": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerConfigTests.dia"
+  },
+  "/private/tmp/qtrust-sdk-scanner/Tests/ScannerTests/ScannerErrorTests.swift": {
+    "dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerErrorTests.d",
+    "object": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerErrorTests.swift.o",
+    "swiftmodule": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerErrorTests~partial.swiftmodule",
+    "swift-dependencies": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerErrorTests.swiftdeps",
+    "diagnostics": "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScannerTests.build/ScannerErrorTests.dia"
+  }
+}

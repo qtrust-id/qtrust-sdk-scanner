@@ -6,7 +6,6 @@ import QTrustScanner
 private typealias QRScanner = QTrustScanner.Scanner
 
 struct ScannerScreen: View {
-    let apiKey: String
     let scanType: ScanType
     let skipTutorial: Bool
     let apiStyle: ContentView.APIStyle
@@ -18,7 +17,6 @@ struct ScannerScreen: View {
 
     var body: some View {
         DirectWebView(
-            apiKey: apiKey,
             scanType: scanType,
             skipTutorial: skipTutorial,
             apiStyle: apiStyle,
@@ -51,7 +49,6 @@ private final class FullBleedWebView: WKWebView {
 // MARK: - Direct WKWebView approach — no SDK wrapper, minimal indirection
 
 private struct DirectWebView: UIViewRepresentable {
-    let apiKey: String
     let scanType: ScanType
     let skipTutorial: Bool
     let apiStyle: ContentView.APIStyle
@@ -127,12 +124,12 @@ private struct DirectWebView: UIViewRepresentable {
         context.coordinator.webView = wv
         context.coordinator.container = container
 
-        // Load the offline-capable bundled scanner page from the SDK. file:// is
-        // a secure context in WKWebView, so getUserMedia works with no network.
-        // The page is a single classic-script bundle (no ES modules, which
-        // WKWebView blocks under file://). The cloud serverUrl/API key are injected
-        // after load via ScannerInit (see didFinish), keeping the scanner
-        // online-primary with an on-device decode fallback when cloud is unreachable.
+        // Load the bundled scanner page from the SDK. file:// is a secure context
+        // in WKWebView, so getUserMedia works with no network. The page is a single
+        // classic-script bundle (no ES modules, which WKWebView blocks under
+        // file://) with the zxing-wasm decoder inlined. Scanning is fully on-device
+        // — no server URL. ScannerInit (see didFinish) only passes the
+        // scan type and vendor config.
         if let webDir = ScannerAssets.webDirectoryURL, let indexURL = ScannerAssets.indexURL {
             wv.loadFileURL(indexURL, allowingReadAccessTo: webDir)
             print("[DirectWebView] Loading bundled: \(indexURL.path)")
@@ -201,7 +198,7 @@ private struct DirectWebView: UIViewRepresentable {
                 print("[DirectWebView] HTTP \(http.statusCode)")
                 receivedHTTPError = true
                 decisionHandler(.allow) // Let error page render
-                let msg = http.statusCode == 401 ? "Invalid or missing API key" : "Server error (HTTP \(http.statusCode))"
+                let msg = "Failed to load scanner (HTTP \(http.statusCode))"
                 DispatchQueue.main.async {
                     self.revealWebView()
                     self.parent.onError(msg)
@@ -218,9 +215,8 @@ private struct DirectWebView: UIViewRepresentable {
                 return
             }
             print("[DirectWebView] Page loaded, calling ScannerInit")
-            let serverUrl = "https://scanner.noersy.my.id"
             let skipTut = parent.skipTutorial ? "true" : "false"
-            let js = "window.ScannerInit({key: '\(parent.apiKey)', serverUrl: '\(serverUrl)', type: \(parent.scanType.rawValue), config: {skipTutorial: \(skipTut)}});"
+            let js = "window.ScannerInit({type: \(parent.scanType.rawValue), config: {skipTutorial: \(skipTut)}});"
             webView.evaluateJavaScript(js) { _, error in
                 if let error {
                     print("[DirectWebView] JS error: \(error)")
@@ -298,7 +294,6 @@ private struct DirectWebView: UIViewRepresentable {
 
 #Preview {
     ScannerScreen(
-        apiKey: "sk_live_test",
         scanType: .qr,
         skipTutorial: true,
         apiStyle: .callback,
