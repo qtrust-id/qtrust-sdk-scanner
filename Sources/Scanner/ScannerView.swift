@@ -114,8 +114,7 @@ public final class ScannerView: UIView {
         // Load the BUNDLED scanner page. file:// in WKWebView is a secure context,
         // so getUserMedia works. Scanning runs fully on-device (zxing-wasm) — no
         // network, no server URL. mode=sdk skips the home screen.
-        // Effective bundle = newest verified OTA cache, else the in-SDK seed
-        // (resolved once per process by ScannerAssets).
+        // Loads the web bundle shipped inside the SDK (resolved by ScannerAssets).
         guard let webDirURL = ScannerAssets.webDirectoryURL else {
             logger.error("performLoad: bundled web resources not found")
             bridge.onError?(.connectionFailed("bundled scanner assets missing"))
