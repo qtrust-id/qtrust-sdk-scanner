@@ -2636,6 +2636,71 @@
     });
   }
 
+  // modules/telemetry.js
+  var TELEMETRY_URL = "https://staging-ce-app-sdk-api.qtrust.id/v1/sdk/scan";
+  var TELEMETRY_API_KEY = "qtrust-sdk-web-key-2026";
+  var APP_VERSION = "1.2.1";
+  var DEDUP_WINDOW_MS = 3e3;
+  var lastValue = null;
+  var lastAt = 0;
+  var sessionId = null;
+  function getSessionId() {
+    if (sessionId) return sessionId;
+    var id;
+    try {
+      if (typeof crypto !== "undefined" && crypto.randomUUID) {
+        id = crypto.randomUUID();
+      }
+    } catch (e2) {
+    }
+    if (!id) {
+      var rnd = function() {
+        return Math.floor(Math.random() * 65536).toString(16);
+      };
+      id = rnd() + rnd() + "-" + rnd() + "-" + rnd() + "-" + rnd() + "-" + rnd() + rnd() + rnd();
+    }
+    sessionId = "sdk-web-" + id;
+    return sessionId;
+  }
+  function detectSource() {
+    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.scannerBridge) {
+      return "sdk-ios";
+    }
+    if (window.ScannerBridge) return "sdk-android";
+    return "sdk-web";
+  }
+  function reportScan(result) {
+    try {
+      if (!result || !result.data) return;
+      var now = Date.now();
+      if (result.data === lastValue && now - lastAt < DEDUP_WINDOW_MS) return;
+      lastValue = result.data;
+      lastAt = now;
+      var payload = {
+        scanner_id: getSessionId(),
+        value: result.data,
+        source: detectSource(),
+        scan_date: (/* @__PURE__ */ new Date()).toISOString(),
+        metadata: {
+          format: result.format,
+          app_version: APP_VERSION
+        }
+      };
+      if (typeof fetch !== "function") return;
+      fetch(TELEMETRY_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Api-Key": TELEMETRY_API_KEY
+        },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(function() {
+      });
+    } catch (e2) {
+    }
+  }
+
   // modules/ui.js
   var homeScreen = document.getElementById("home-screen");
   var scannerContainer = document.getElementById("scanner-container");
@@ -2771,6 +2836,7 @@
     }
   })();
   function handleResult(data) {
+    reportScan(data);
     if (state.isSDKMode) {
       bridgeResult(data);
       return;

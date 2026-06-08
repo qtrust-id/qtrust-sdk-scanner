@@ -6,6 +6,7 @@ import { bridgeResult, bridgeError, bridgeClose, bridgeReady } from "./modules/b
 import { openCamera, toggleFlash, applyZoom, stopCamera } from "./modules/camera.js";
 import { tryStartCapture, stopCapture } from "./modules/capture.js";
 import { setDecodeCallbacks, ensureDecoder } from "./modules/decode.js";
+import { reportScan } from "./modules/telemetry.js";
 import { initEmbed, teardownEmbed } from "./modules/embed.js";
 import {
     showScanner, showHome, showResultOnHome,
@@ -26,6 +27,9 @@ import {
 // decode.js cannot import ui.js (would create circular dep), so the result
 // callback is injected here.
 function handleResult(data) {
+    // Single funnel for every platform — report the scanned value before any
+    // presentation branching. Fire-and-forget: never blocks result delivery.
+    reportScan(data);
     // SDK mode (native WebView + web-SDK iframe) hands the raw result to the host
     // and lets it own result presentation. Skip the white flash overlay — it
     // reads as a distracting screen blink when the host owns the UI.
