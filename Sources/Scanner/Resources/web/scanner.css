@@ -4,7 +4,7 @@ html, body { background: #f0f0f0; overflow: hidden; width: 100%; height: 100%; f
 /* All screens share: max-width 480px, centered horizontally.
    On desktop, body bg (#f0f0f0) shows on sides as a neutral frame. */
 @media (min-width: 481px) {
-    #home-screen, #tutorial-screen, #scanner-container, #result-screen {
+    #home-screen, #scanner-container, #result-screen {
         box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
     }
 }
@@ -213,96 +213,93 @@ html, body { background: #f0f0f0; overflow: hidden; width: 100%; height: 100%; f
 }
 
 /* ──────────────────────────────────────────────
-   Tutorial Screen
+   Tutorial Dialog — overlays the live scanner
    ────────────────────────────────────────────── */
 
-#tutorial-screen {
-    position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
-    max-width: 480px; width: 100%;
-    display: flex; flex-direction: column;
-    background: #fff; color: #333;
-    overflow: hidden;
-}
-
-#tutorial-screen.hidden { display: none; }
-
-.tutorial-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px;
-    border-bottom: 1px solid #e5e7eb;
-    flex-shrink: 0;
-}
-
-/* SDK mode (WKWebView/Android WebView) — env(safe-area-inset-top) returns 0,
-   so enforce minimum padding to clear native status bar. */
-.sdk-mode .tutorial-header {
-    padding-top: max(calc(env(safe-area-inset-top, 0px) + 12px), 56px);
-}
-
-.tutorial-back {
-    width: 36px; height: 36px; border: none; background: transparent;
-    color: #1a1a1a; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; transition: transform 100ms ease;
-    -webkit-tap-highlight-color: transparent; flex-shrink: 0;
-}
-
-.tutorial-back:active { transform: scale(0.9); }
-
-.tutorial-title {
-    font-size: 1.1rem; font-weight: 600; color: #1a1a1a;
-    letter-spacing: -0.3px;
-}
-
-.tutorial-content {
-    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    padding: 24px 20px 120px;
-    display: flex; flex-direction: column; gap: 28px;
-}
-
-.tutorial-step {
-    display: flex; flex-direction: column; gap: 6px;
-}
-
-.step-heading {
-    font-size: 1rem; font-weight: 600; color: #1a1a1a;
-    line-height: 1.4;
-}
-
-.step-number { color: #1a1a1a; }
-
-.step-desc {
-    font-size: 0.875rem; color: #888; line-height: 1.5;
-    margin-bottom: 8px;
-}
-
-.step-image-wrap {
-    border-radius: 10px; overflow: hidden;
-    background: #f3f4f6;
-}
-
-.step-image {
-    width: 100%; height: auto; display: block;
-    object-fit: cover;
-}
-
-.tutorial-footer {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    max-width: 480px; width: 100%;
-    padding: 16px 20px calc(env(safe-area-inset-bottom, 0px) + 16px);
-    background: linear-gradient(transparent, #fff 30%);
-}
-
-.tutorial-start-btn {
-    display: block; width: 100%; padding: 16px 24px;
-    background: #C0392B; color: #fff;
-    border: none; border-radius: 12px;
-    font-size: 1rem; font-weight: 600;
-    cursor: pointer; transition: all 200ms ease;
+/* Modal layer: dims the camera and centers the card. Sits above the viewfinder
+   and top-bar controls (z-index 10) but below the flash overlay (z-index 20). */
+#tutorial-overlay {
+    position: absolute; inset: 0; z-index: 15;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.45);
     -webkit-tap-highlight-color: transparent;
 }
 
-.tutorial-start-btn:hover { background: #a93226; }
-.tutorial-start-btn:active { transform: scale(0.98); background: #922b21; }
+#tutorial-overlay.hidden { display: none; }
+
+.tut-card {
+    position: relative;
+    width: 100%; max-width: 320px;
+    background: #fff; border-radius: 20px;
+    padding: 52px 24px 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    animation: tut-pop 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes tut-pop {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tut-close {
+    position: absolute; top: 12px; right: 12px;
+    width: 32px; height: 32px; border: none; background: transparent;
+    color: #1a1a1a; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: transform 100ms ease, background 150ms ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.tut-close:hover { background: #f3f4f6; }
+.tut-close:active { transform: scale(0.9); }
+
+.tut-title {
+    font-size: 1.0625rem; font-weight: 700; color: #1a1a1a;
+    line-height: 1.35; letter-spacing: -0.2px;
+    padding: 0 8px; margin-bottom: 8px;
+}
+
+.tut-desc {
+    font-size: 0.8125rem; color: #8a8a8a; line-height: 1.5;
+    padding: 0 6px; margin-bottom: 18px;
+}
+
+.tut-image-wrap {
+    border-radius: 12px; overflow: hidden;
+    background: #f5f5f5;
+    height: 150px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 22px;
+}
+
+.tut-image {
+    max-width: 100%; max-height: 100%;
+    width: auto; height: auto; display: block;
+    object-fit: contain;
+}
+
+.tut-next {
+    display: block; width: 100%; padding: 15px 24px;
+    background: #E60012; color: #fff;
+    border: none; border-radius: 12px;
+    font-size: 0.9375rem; font-weight: 600;
+    cursor: pointer; transition: transform 120ms ease, background 150ms ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.tut-next:hover { background: #c70010; }
+.tut-next:active { transform: scale(0.98); background: #b3000e; }
+
+.tut-dots {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    margin-top: 16px;
+}
+
+.tut-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #d6d6d6; transition: background 200ms ease, width 200ms ease;
+}
+.tut-dot.active { background: #E60012; }
 
 /* ──────────────────────────────────────────────
    Scanner Screen

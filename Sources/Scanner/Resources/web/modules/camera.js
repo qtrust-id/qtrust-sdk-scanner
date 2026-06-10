@@ -1,6 +1,6 @@
 "use strict";
 
-import { state, ScanType } from "./state.js";
+import { state } from "./state.js";
 import { dbg } from "./debug.js";
 import { computeViewfinderCrop } from "./capture.js";
 import { pickMainLens } from "./camera-selection.js";
@@ -60,31 +60,8 @@ export function openCamera() {
             video.classList.add("playing");
         });
         return video.play().then(function () {
-            var vw = video.videoWidth || 640;
-            var vh = video.videoHeight || 480;
-            dbg("play() ok, " + vw + "x" + vh);
-
-            if (state.scanType === ScanType.BARCODE) {
-                state.captureCrop = computeViewfinderCrop(vw, vh);
-                if (state.captureCrop && state.captureCrop.w > 0 && state.captureCrop.h > 0) {
-                    state.captureWidth = state.captureCrop.w;
-                    state.captureHeight = state.captureCrop.h;
-                    dbg("viewfinder crop: " + state.captureCrop.x + "," + state.captureCrop.y +
-                        " " + state.captureCrop.w + "x" + state.captureCrop.h);
-                } else {
-                    state.captureCrop = null;
-                    state.captureWidth = Math.min(640, vw);
-                    state.captureHeight = Math.round(vh * (state.captureWidth / vw));
-                }
-            } else {
-                state.captureCrop = null;
-                state.captureWidth = vw;
-                state.captureHeight = vh;
-            }
-            canvas.width = state.captureWidth;
-            canvas.height = state.captureHeight;
-            dbg("capture: " + state.captureWidth + "x" + state.captureHeight);
-
+            dbg("play() ok, " + (video.videoWidth || 0) + "x" + (video.videoHeight || 0));
+            refreshCaptureCrop();
             status.textContent = "Scanning...";
         });
     }).then(function () {
@@ -108,6 +85,67 @@ export function openCamera() {
         throw err;
     });
 }
+
+/**
+ * (Re)compute the decode mask from the live viewfinder rect and size the canvas.
+ *
+ * Masking applies to EVERY scan type: the camera preview stays full-frame, but
+ * only the pixels inside the viewfinder are handed to the decoder. This stops a
+ * code next to the target (e.g. a QR beside a barcode) from hijacking decode.
+ *
+ * computeViewfinderCrop reads getBoundingClientRect, so the mask follows the
+ * shape currently rendered — the wide rectangle for linear codes (Barcode/
+ * PDF417) or the square for 2D codes (QR/Aztec/DataMatrix). The crop is taken at
+ * native video resolution (no downscale), so 2D codes keep maximum pixels inside
+ * the mask.
+ *
+ * Recomputed on resize/orientationchange so the mask never goes stale after the
+ * viewfinder moves or changes shape.
+ */
+function refreshCaptureCrop() {
+    var vw = video.videoWidth || 640;
+    var vh = video.videoHeight || 480;
+
+    state.captureCrop = computeViewfinderCrop(vw, vh);
+    if (state.captureCrop && state.captureCrop.w > 0 && state.captureCrop.h > 0) {
+        state.captureWidth = state.captureCrop.w;
+        state.captureHeight = state.captureCrop.h;
+        dbg("viewfinder crop: " + state.captureCrop.x + "," + state.captureCrop.y +
+            " " + state.captureCrop.w + "x" + state.captureCrop.h);
+    } else {
+        // Viewfinder rect unavailable (hidden/zero-dim DOM) — mask is disabled
+        // this frame. Fall back to the full native frame so no resolution is
+        // thrown away (object-fit:cover already hides the edges). Warn so a
+        // mis-hidden viewfinder is debuggable instead of silently unmasked.
+        dbg("WARN: viewfinder rect unavailable — decode mask disabled, using full frame");
+        state.captureCrop = null;
+        state.captureWidth = vw;
+        state.captureHeight = vh;
+    }
+    canvas.width = state.captureWidth;
+    canvas.height = state.captureHeight;
+    dbg("capture: " + state.captureWidth + "x" + state.captureHeight);
+}
+
+// Keep the decode mask aligned with the viewfinder across rotation and layout
+// changes. Wired once at module load (ES module body runs once, even in the
+// esbuild IIFE bundle — no duplicate listeners).
+//
+// Recompute is coalesced into a single requestAnimationFrame: a burst of resize
+// events (soft-keyboard insets, status-bar animation) collapses to one pass,
+// and on orientationchange the rAF defers the getBoundingClientRect read past
+// the reflow so it sees the settled layout, not the pre-rotation rect. The
+// cameraReady + videoWidth guards skip stale rects after stop/teardown.
+var viewportRaf = 0;
+function onViewportChange() {
+    if (viewportRaf || !state.cameraReady || video.videoWidth === 0) return;
+    viewportRaf = requestAnimationFrame(function () {
+        viewportRaf = 0;
+        if (state.cameraReady && video.videoWidth > 0) refreshCaptureCrop();
+    });
+}
+window.addEventListener("resize", onViewportChange);
+window.addEventListener("orientationchange", onViewportChange);
 
 /**
  * On multi-lens devices, facingMode:environment may hand back the ultra-wide

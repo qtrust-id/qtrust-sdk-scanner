@@ -2,7 +2,7 @@
 
 import { state } from "./state.js";
 import { dbg } from "./debug.js";
-import { decodeFrame } from "./decode.js";
+import { decodeFrame, resetScanGate } from "./decode.js";
 
 var video = document.getElementById("video");
 var canvas = document.getElementById("canvas");
@@ -53,6 +53,9 @@ export function computeViewfinderCrop(videoW, videoH) {
 
 export function startCapture() {
     stopCapture();
+    // Arm the stability gate fresh for this session — imposes the pre-scan delay
+    // and clears any candidate left over from a prior run.
+    resetScanGate();
     captureLoop();
 }
 
@@ -69,6 +72,13 @@ export function stopCapture() {
  * (after the wasm decoder loads).
  */
 export function tryStartCapture() {
+    // Hold capture while the first-time tutorial is up — the camera preview runs
+    // behind the dialog, but nothing should be decoded until the user dismisses
+    // it. dismissTutorial() re-invokes this once closed.
+    if (state.tutorialOpen) {
+        dbg("tutorial open — defer capture");
+        return;
+    }
     if (state.cameraReady && state.wasmReady) {
         dbg("ready — starting capture");
         startCapture();

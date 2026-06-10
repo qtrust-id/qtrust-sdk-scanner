@@ -102,53 +102,41 @@ function startScannerFlow() {
 }
 
 // ── Proceed to scanner (shared by tutorial + skip path) ─
-function proceedToScanner() {
+// The camera opens immediately; the tutorial (when enabled) is a dialog over the
+// live preview. Capture is held off while it is open (capture.js checks the flag).
+function proceedToScanner(withTutorial) {
     showScanner();
     startScannerFlow();
+    if (withTutorial) showTutorial();
 }
 
 // ── Mode routing ───────────────────────────────────────
 var homeScreen = document.getElementById("home-screen");
 var scannerContainer = document.getElementById("scanner-container");
-var tutorialScreen = document.getElementById("tutorial-screen");
 
 if (state.isSDKMode) {
     // SDK mode — hide all screens at boot, ScannerInit decides which to show
     document.body.classList.add("sdk-mode");
     homeScreen.classList.add("hidden");
-    if (tutorialScreen) tutorialScreen.classList.add("hidden");
     scannerContainer.classList.add("hidden");
 } else {
     homeScreen.classList.remove("hidden");
     scannerContainer.classList.add("hidden");
-    if (tutorialScreen) tutorialScreen.classList.add("hidden");
 }
 
 // ── Home screen ────────────────────────────────────────
-// Flow: Home → Tutorial → Scanner (or Home → Scanner if skip_tutorial=1)
+// Flow: Home → Scanner (camera opens; tutorial dialog overlays unless skipped).
 initHomeScreen(function () {
-    if (state.config.skipTutorial) {
-        proceedToScanner();
-    } else {
-        showTutorial();
-    }
+    proceedToScanner(!state.config.skipTutorial);
 });
 
-// ── Tutorial screen ────────────────────────────────────
-initTutorialScreen(
-    function () { proceedToScanner(); },   // "Mulai Scan" → scanner
-    function () {                          // back → close (SDK) or home (web)
-        if (state.isSDKMode) {
-            bridgeClose();
-        } else {
-            showHome();
-        }
-    }
-);
+// ── Tutorial dialog ────────────────────────────────────
+// Dismissing the dialog (close button or final "Tutup") begins decoding.
+initTutorialScreen(function () { tryStartCapture(); });
 
 // ── Result screen ──────────────────────────────────────
 initResultScreen(
-    function () { proceedToScanner(); },  // "Scan Lagi" → restart scanner
+    function () { proceedToScanner(false); },  // "Scan Lagi" → restart scanner
     function () {                         // "Lapor" → bridge close (SDK) or home (web)
         if (state.isSDKMode) {
             bridgeClose();
@@ -218,15 +206,15 @@ window.ScannerInit = function (opts) {
         dbg("ScannerInit: config=" + JSON.stringify(dbgCfg));
     }
 
-    // Start scanner flow based on config
+    // Start scanner flow based on config. The camera opens either way; the
+    // tutorial is a dialog over the live preview (capture is held until it is
+    // dismissed). bridgeReady fires so native removes its loading overlay.
     if (state.isSDKMode) {
-        if (state.config.skipTutorial) {
-            proceedToScanner();
-        } else {
-            // Show tutorial and signal ready so native removes loading overlay
-            showTutorial();
-            bridgeReady();
-        }
+        proceedToScanner(!state.config.skipTutorial);
+        // Signal ready now so native drops its loading overlay as soon as our UI
+        // (scanner + tutorial dialog) is on screen, rather than waiting for the
+        // decoder. Latched in bridgeReady — the decoder-ready path is a no-op.
+        bridgeReady();
     }
 };
 

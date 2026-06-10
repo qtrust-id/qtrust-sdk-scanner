@@ -86,6 +86,9 @@
     captureCrop: null,
     // Ready gate — capture starts once the camera and decoder are both ready.
     cameraReady: false,
+    // First-time tutorial dialog. While open, decode capture is held off (the
+    // camera preview still runs) so nothing is scanned behind the instructions.
+    tutorialOpen: false,
     // Lifecycle latch — set while the camera is released because the page is
     // backgrounded (Page Visibility hidden). Gates the resume re-acquire so we
     // only restart what the lifecycle handler itself suspended. See lifecycle.js.
@@ -2320,6 +2323,57 @@
   var wasmLoadPromise = null;
   var decoding = false;
   var onResultCb = null;
+  var SCAN_ARMING_MS = 500;
+  var SCAN_CONFIRM_MS = 350;
+  var SCAN_CONFIRM_FRAMES = 2;
+  var SCAN_MISS_TOLERANCE = 2;
+  var gateArmedAt = 0;
+  var pendingValue = null;
+  var pendingSince = 0;
+  var pendingFrames = 0;
+  var pendingMisses = 0;
+  function nowMs() {
+    return typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
+  }
+  function resetScanGate() {
+    gateArmedAt = nowMs() + SCAN_ARMING_MS;
+    pendingValue = null;
+    pendingSince = 0;
+    pendingFrames = 0;
+    pendingMisses = 0;
+  }
+  function gateResult(hit) {
+    var now = nowMs();
+    if (now < gateArmedAt) {
+      if (gateArmedAt - now > SCAN_ARMING_MS) gateArmedAt = now + SCAN_ARMING_MS;
+      pendingValue = null;
+      pendingFrames = 0;
+      pendingMisses = 0;
+      return null;
+    }
+    if (!hit) {
+      if (pendingValue !== null && ++pendingMisses > SCAN_MISS_TOLERANCE) {
+        pendingValue = null;
+        pendingFrames = 0;
+        pendingMisses = 0;
+      }
+      return null;
+    }
+    pendingMisses = 0;
+    if (hit.text === pendingValue) {
+      pendingFrames++;
+    } else {
+      pendingValue = hit.text;
+      pendingSince = now;
+      pendingFrames = 1;
+      return null;
+    }
+    if (pendingFrames >= SCAN_CONFIRM_FRAMES && now - pendingSince >= SCAN_CONFIRM_MS) {
+      resetScanGate();
+      return hit;
+    }
+    return null;
+  }
   var FORMATS_BY_TYPE = {};
   FORMATS_BY_TYPE[ScanType.QR] = ["QRCode", "MicroQRCode"];
   FORMATS_BY_TYPE[ScanType.BARCODE] = ["EAN-13", "EAN-8", "Code128", "Code39", "Codabar", "ITF", "UPC-A", "UPC-E"];
@@ -2421,7 +2475,8 @@
           break;
         }
       }
-      if (hit && onResultCb) onResultCb(toResult(hit));
+      var accepted = gateResult(hit);
+      if (accepted && onResultCb) onResultCb(toResult(accepted));
     } catch (err) {
       dbg("wasm decode error: " + (err ? err.message : "unknown"));
     } finally {
@@ -2465,6 +2520,7 @@
   }
   function startCapture() {
     stopCapture();
+    resetScanGate();
     captureLoop();
   }
   function stopCapture() {
@@ -2474,6 +2530,10 @@
     }
   }
   function tryStartCapture() {
+    if (state.tutorialOpen) {
+      dbg("tutorial open \u2014 defer capture");
+      return;
+    }
     if (state.cameraReady && state.wasmReady) {
       dbg("ready \u2014 starting capture");
       startCapture();
@@ -2584,28 +2644,8 @@
         video2.classList.add("playing");
       });
       return video2.play().then(function() {
-        var vw = video2.videoWidth || 640;
-        var vh = video2.videoHeight || 480;
-        dbg("play() ok, " + vw + "x" + vh);
-        if (state.scanType === ScanType.BARCODE) {
-          state.captureCrop = computeViewfinderCrop(vw, vh);
-          if (state.captureCrop && state.captureCrop.w > 0 && state.captureCrop.h > 0) {
-            state.captureWidth = state.captureCrop.w;
-            state.captureHeight = state.captureCrop.h;
-            dbg("viewfinder crop: " + state.captureCrop.x + "," + state.captureCrop.y + " " + state.captureCrop.w + "x" + state.captureCrop.h);
-          } else {
-            state.captureCrop = null;
-            state.captureWidth = Math.min(640, vw);
-            state.captureHeight = Math.round(vh * (state.captureWidth / vw));
-          }
-        } else {
-          state.captureCrop = null;
-          state.captureWidth = vw;
-          state.captureHeight = vh;
-        }
-        canvas2.width = state.captureWidth;
-        canvas2.height = state.captureHeight;
-        dbg("capture: " + state.captureWidth + "x" + state.captureHeight);
+        dbg("play() ok, " + (video2.videoWidth || 0) + "x" + (video2.videoHeight || 0));
+        refreshCaptureCrop();
         status.textContent = "Scanning...";
       });
     }).then(function() {
@@ -2628,6 +2668,34 @@
       throw err;
     });
   }
+  function refreshCaptureCrop() {
+    var vw = video2.videoWidth || 640;
+    var vh = video2.videoHeight || 480;
+    state.captureCrop = computeViewfinderCrop(vw, vh);
+    if (state.captureCrop && state.captureCrop.w > 0 && state.captureCrop.h > 0) {
+      state.captureWidth = state.captureCrop.w;
+      state.captureHeight = state.captureCrop.h;
+      dbg("viewfinder crop: " + state.captureCrop.x + "," + state.captureCrop.y + " " + state.captureCrop.w + "x" + state.captureCrop.h);
+    } else {
+      dbg("WARN: viewfinder rect unavailable \u2014 decode mask disabled, using full frame");
+      state.captureCrop = null;
+      state.captureWidth = vw;
+      state.captureHeight = vh;
+    }
+    canvas2.width = state.captureWidth;
+    canvas2.height = state.captureHeight;
+    dbg("capture: " + state.captureWidth + "x" + state.captureHeight);
+  }
+  var viewportRaf = 0;
+  function onViewportChange() {
+    if (viewportRaf || !state.cameraReady || video2.videoWidth === 0) return;
+    viewportRaf = requestAnimationFrame(function() {
+      viewportRaf = 0;
+      if (state.cameraReady && video2.videoWidth > 0) refreshCaptureCrop();
+    });
+  }
+  window.addEventListener("resize", onViewportChange);
+  window.addEventListener("orientationchange", onViewportChange);
   function refineToMainLens(stream) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       return Promise.resolve(stream);
@@ -2737,7 +2805,7 @@
   // modules/telemetry.js
   var TELEMETRY_URL = "https://staging-ce-app-sdk-api.qtrust.id/v1/sdk/scan";
   var TELEMETRY_API_KEY = "qtrust-sdk-web-key-2026";
-  var APP_VERSION = "1.2.4";
+  var APP_VERSION = "1.2.5";
   var DEDUP_WINDOW_MS = 3e3;
   var lastValue = null;
   var lastAt = 0;
@@ -2835,7 +2903,7 @@
   // modules/ui.js
   var homeScreen = document.getElementById("home-screen");
   var scannerContainer = document.getElementById("scanner-container");
-  var tutorialScreen = document.getElementById("tutorial-screen");
+  var tutorialOverlay = document.getElementById("tutorial-overlay");
   var resultScreen = document.getElementById("result-screen");
   var homeResultSection = document.getElementById("home-result");
   var resultDataEl = document.getElementById("result-data");
@@ -2846,16 +2914,12 @@
   function hideAllScreens() {
     homeScreen.classList.add("hidden");
     scannerContainer.classList.add("hidden");
-    if (tutorialScreen) tutorialScreen.classList.add("hidden");
     if (resultScreen) resultScreen.classList.add("hidden");
+    hideTutorialOverlay();
   }
   function showScanner() {
     hideAllScreens();
     scannerContainer.classList.remove("hidden");
-  }
-  function showTutorial() {
-    hideAllScreens();
-    if (tutorialScreen) tutorialScreen.classList.remove("hidden");
   }
   function showHome() {
     stopCapture();
@@ -2917,17 +2981,79 @@
       }
     }
   }
-  function initTutorialScreen(onStartScan, onBack) {
+  var TUTORIAL_STEPS = {
+    qr: [
+      { title: "Posisi QR pada kemasan", desc: "QR biasanya berada di sisi belakang atau samping kemasan", image: "tut-qr-1.png" },
+      { title: "Arahkan QR ke dalam area scan", desc: "Posisikan QR di dalam area scan dengan pencahayaan yang cukup", image: "tut-qr-2.png" },
+      { title: "Jarak Ideal", desc: "Pastikan jarak kamera sekitar 10\u201315 cm dari QR", image: "tut-qr-3.png" }
+    ],
+    barcode: [
+      { title: "Posisi barcode pada kemasan", desc: "Barcode biasanya berada di sisi belakang atau samping kemasan", image: "tut-bc-1.png" },
+      { title: "Arahkan barcode ke dalam area scan", desc: "Posisikan barcode di dalam area scan dengan pencahayaan yang cukup", image: "tut-bc-2.png" },
+      { title: "Jarak Ideal", desc: "Pastikan jarak kamera sekitar 10\u201315 cm dari barcode", image: "tut-bc-3.png" }
+    ]
+  };
+  var tutTitle = document.getElementById("tut-title");
+  var tutDesc = document.getElementById("tut-desc");
+  var tutImage = document.getElementById("tut-image");
+  var tutNext = document.getElementById("tut-next");
+  var tutClose = document.getElementById("tut-close");
+  var tutDotsWrap = document.getElementById("tut-dots");
+  var tutSteps = [];
+  var tutIndex = 0;
+  var onTutorialDone = null;
+  function tutAsset(name) {
+    var map = typeof window !== "undefined" && window.__SCANNER_ASSETS__ || null;
+    if (map && map[name]) return map[name];
+    return "assets/" + name;
+  }
+  function renderTutorialStep() {
+    var step = tutSteps[tutIndex];
+    if (!step) return;
+    if (tutTitle) tutTitle.textContent = step.title;
+    if (tutDesc) tutDesc.textContent = step.desc;
+    if (tutImage) {
+      tutImage.src = tutAsset(step.image);
+      tutImage.alt = step.title;
+    }
+    if (tutNext) tutNext.textContent = tutIndex >= tutSteps.length - 1 ? "Tutup" : "Lanjut";
+    if (tutDotsWrap) {
+      var dots = tutDotsWrap.querySelectorAll(".tut-dot");
+      for (var i2 = 0; i2 < dots.length; i2++) {
+        dots[i2].classList.toggle("active", i2 === tutIndex);
+      }
+    }
+  }
+  function advanceTutorial() {
+    if (tutIndex >= tutSteps.length - 1) {
+      dismissTutorial();
+    } else {
+      tutIndex++;
+      renderTutorialStep();
+    }
+  }
+  function showTutorial() {
+    tutSteps = isLinearScanType(state.scanType) ? TUTORIAL_STEPS.barcode : TUTORIAL_STEPS.qr;
+    tutIndex = 0;
+    state.tutorialOpen = true;
+    renderTutorialStep();
+    if (tutorialOverlay) tutorialOverlay.classList.remove("hidden");
+  }
+  function hideTutorialOverlay() {
+    state.tutorialOpen = false;
+    if (tutorialOverlay) tutorialOverlay.classList.add("hidden");
+  }
+  function dismissTutorial() {
+    if (!state.tutorialOpen) return;
+    hideTutorialOverlay();
+    if (onTutorialDone) onTutorialDone();
+  }
+  function initTutorialScreen(onDone) {
+    onTutorialDone = onDone;
     if (_tutorialScreenBound) return;
     _tutorialScreenBound = true;
-    var btnStart = document.getElementById("btn-tutorial-start");
-    var btnBack2 = document.getElementById("btn-tutorial-back");
-    if (btnStart) {
-      btnStart.addEventListener("click", onStartScan);
-    }
-    if (btnBack2) {
-      btnBack2.addEventListener("click", onBack);
-    }
+    if (tutNext) tutNext.addEventListener("click", advanceTutorial);
+    if (tutClose) tutClose.addEventListener("click", dismissTutorial);
   }
   function initHomeScreen(onStartScan) {
     if (_homeScreenBound) return;
@@ -3015,46 +3141,30 @@
       }
     });
   }
-  function proceedToScanner() {
+  function proceedToScanner(withTutorial) {
     showScanner();
     startScannerFlow();
+    if (withTutorial) showTutorial();
   }
   var homeScreen2 = document.getElementById("home-screen");
   var scannerContainer2 = document.getElementById("scanner-container");
-  var tutorialScreen2 = document.getElementById("tutorial-screen");
   if (state.isSDKMode) {
     document.body.classList.add("sdk-mode");
     homeScreen2.classList.add("hidden");
-    if (tutorialScreen2) tutorialScreen2.classList.add("hidden");
     scannerContainer2.classList.add("hidden");
   } else {
     homeScreen2.classList.remove("hidden");
     scannerContainer2.classList.add("hidden");
-    if (tutorialScreen2) tutorialScreen2.classList.add("hidden");
   }
   initHomeScreen(function() {
-    if (state.config.skipTutorial) {
-      proceedToScanner();
-    } else {
-      showTutorial();
-    }
+    proceedToScanner(!state.config.skipTutorial);
   });
-  initTutorialScreen(
-    function() {
-      proceedToScanner();
-    },
-    // "Mulai Scan" → scanner
-    function() {
-      if (state.isSDKMode) {
-        bridgeClose();
-      } else {
-        showHome();
-      }
-    }
-  );
+  initTutorialScreen(function() {
+    tryStartCapture();
+  });
   initResultScreen(
     function() {
-      proceedToScanner();
+      proceedToScanner(false);
     },
     // "Scan Lagi" → restart scanner
     function() {
@@ -3108,12 +3218,8 @@
       dbg("ScannerInit: config=" + JSON.stringify(dbgCfg));
     }
     if (state.isSDKMode) {
-      if (state.config.skipTutorial) {
-        proceedToScanner();
-      } else {
-        showTutorial();
-        bridgeReady();
-      }
+      proceedToScanner(!state.config.skipTutorial);
+      bridgeReady();
     }
   };
   window.ScannerUpdateConfig = function(updates) {

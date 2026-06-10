@@ -117,6 +117,10 @@ export var state = {
     // Ready gate — capture starts once the camera and decoder are both ready.
     cameraReady: false,
 
+    // First-time tutorial dialog. While open, decode capture is held off (the
+    // camera preview still runs) so nothing is scanned behind the instructions.
+    tutorialOpen: false,
+
     // Lifecycle latch — set while the camera is released because the page is
     // backgrounded (Page Visibility hidden). Gates the resume re-acquire so we
     // only restart what the lifecycle handler itself suspended. See lifecycle.js.

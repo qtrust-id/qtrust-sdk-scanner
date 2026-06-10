@@ -71,47 +71,7 @@
         </div>
 
         <div class="home-footer">
-            <span>QTrust Scanner v1.2.4</span>
-        </div>
-    </div>
-
-    <!-- Tutorial Screen -->
-    <div id="tutorial-screen" class="hidden">
-        <div class="tutorial-header">
-            <button id="btn-tutorial-back" class="tutorial-back" aria-label="Go back">
-                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
-            </button>
-            <h2 class="tutorial-title">Cara scan yang benar</h2>
-        </div>
-
-        <div class="tutorial-content">
-            <div class="tutorial-step">
-                <h3 class="step-heading"><span class="step-number">1.</span> Posisi QR pada kemasan</h3>
-                <p class="step-desc">QR biasanya berada di sisi belakang atau samping kemasan</p>
-                <div class="step-image-wrap">
-                    <img src="assets/tutorial-1.jpg" alt="Posisi QR pada kemasan" class="step-image" width="600" height="200" loading="eager">
-                </div>
-            </div>
-
-            <div class="tutorial-step">
-                <h3 class="step-heading"><span class="step-number">2.</span> Arahkan QR ke dalam area scan</h3>
-                <p class="step-desc">Posisikan QR di dalam area scan dengan pencahayaan yang cukup</p>
-                <div class="step-image-wrap">
-                    <img src="assets/tutorial-2.jpg" alt="Arahkan QR ke area scan" class="step-image" width="600" height="200" loading="eager">
-                </div>
-            </div>
-
-            <div class="tutorial-step">
-                <h3 class="step-heading"><span class="step-number">3.</span> Jarak Ideal</h3>
-                <p class="step-desc">Pastikan jarak kamera sekitar 10–15 cm dari QR</p>
-                <div class="step-image-wrap">
-                    <img src="assets/tutorial-3.jpg" alt="Jarak ideal 10-15cm" class="step-image" width="600" height="200" loading="eager">
-                </div>
-            </div>
-        </div>
-
-        <div class="tutorial-footer">
-            <button id="btn-tutorial-start" class="tutorial-start-btn">Mulai Scan</button>
+            <span>QTrust Scanner v1.2.5</span>
         </div>
     </div>
 
@@ -232,7 +192,7 @@
         </div>
 
         <!-- Version label -->
-        <div id="version">QTrust Scanner v1.2.4</div>
+        <div id="version">QTrust Scanner v1.2.5</div>
 
         <!-- Bottom tip -->
         <div id="scan-tip">
@@ -256,6 +216,28 @@
         <div id="status">Initializing...</div>
         <div id="debug"></div>
         <div id="flash-overlay" class="hidden"></div>
+
+        <!-- First-time tutorial — dialog over the live camera. Content + assets
+             adapt to the active scan type (2D square vs 1D linear). All copy and
+             image sources are rendered by ui.js (renderTutorialStep). -->
+        <div id="tutorial-overlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="tut-title">
+            <div class="tut-card">
+                <button id="tut-close" class="tut-close" aria-label="Tutup tutorial">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <h3 id="tut-title" class="tut-title"></h3>
+                <p id="tut-desc" class="tut-desc"></p>
+                <div class="tut-image-wrap">
+                    <img id="tut-image" class="tut-image" alt="" width="320" height="150">
+                </div>
+                <button id="tut-next" class="tut-next"></button>
+                <div id="tut-dots" class="tut-dots" aria-hidden="true">
+                    <span class="tut-dot"></span>
+                    <span class="tut-dot"></span>
+                    <span class="tut-dot"></span>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- Single classic bundle (esbuild). type=module is avoided because WKWebView
          blocks ES-module loading under file://; the SDK loads this page from a

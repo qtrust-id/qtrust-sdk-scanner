@@ -12,7 +12,7 @@
 
 var TELEMETRY_URL = "https://staging-ce-app-sdk-api.qtrust.id/v1/sdk/scan";
 var TELEMETRY_API_KEY = "qtrust-sdk-web-key-2026";
-var APP_VERSION = "1.2.4";
+var APP_VERSION = "1.2.5";
 
 // Suppress duplicate reports for the same value within this window. decodeFrame
 // can hit the same code on consecutive frames until the host tears down, so

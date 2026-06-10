@@ -26,6 +26,95 @@ var decoding = false;
 // Result callback, injected from main.js (shared with the WS path).
 var onResultCb = null;
 
+// ── Scan confirmation gate ─────────────────────────────
+// Accept a decoded value only after it stays stable for a short beat, so a wrong
+// code that briefly passes through the frame — or a single-frame misread — is
+// never captured. The user must hold the intended code steady to lock it in.
+//
+// Tuned for both capture rates (square 2D @ 5fps, linear @ 10fps): the time
+// gate dominates, the frame gate guards against a lone fluke frame.
+var SCAN_ARMING_MS = 500;     // ignore detections right after capture starts
+var SCAN_CONFIRM_MS = 350;    // same value must persist at least this long...
+var SCAN_CONFIRM_FRAMES = 2;  // ...across at least this many decoded frames
+var SCAN_MISS_TOLERANCE = 2;  // consecutive misses tolerated before pending resets
+
+var gateArmedAt = 0;     // timestamp before which detections are dropped
+var pendingValue = null; // candidate value currently being confirmed
+var pendingSince = 0;    // when the candidate was first seen
+var pendingFrames = 0;   // consecutive frames the candidate has held
+var pendingMisses = 0;   // consecutive frames the candidate was absent
+
+// Prefer the monotonic clock; Date.now is only a last-resort fallback and can
+// jump backward (NTP/user clock change). gateResult clamps against that so a
+// backward jump can never strand the gate in a permanently-disarmed state.
+function nowMs() {
+    return (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+}
+
+/**
+ * Re-arm the confirmation gate at the start of a capture session (and after each
+ * accept). Clears any pending candidate and restarts the arming delay so the
+ * first frames cannot auto-capture whatever code happens to be in view.
+ */
+export function resetScanGate() {
+    gateArmedAt = nowMs() + SCAN_ARMING_MS;
+    pendingValue = null;
+    pendingSince = 0;
+    pendingFrames = 0;
+    pendingMisses = 0;
+}
+
+/**
+ * Run a frame's decode result through the stability gate.
+ * @param {Object|null} hit zxing result for this frame, or null if none decoded
+ * @returns {Object|null} the hit to accept once confirmed, otherwise null
+ */
+function gateResult(hit) {
+    var now = nowMs();
+
+    // Arming delay — drop everything and keep the gate clear until armed.
+    if (now < gateArmedAt) {
+        // Clock-anomaly guard: with the non-monotonic Date.now fallback a backward
+        // jump could leave gateArmedAt unreachably far ahead and stall scanning.
+        // Cap the wait so the stall can never exceed the arming window.
+        if (gateArmedAt - now > SCAN_ARMING_MS) gateArmedAt = now + SCAN_ARMING_MS;
+        pendingValue = null;
+        pendingFrames = 0;
+        pendingMisses = 0;
+        return null;
+    }
+
+    if (!hit) {
+        // Tolerate brief misreads on an otherwise steady code; reset only after a
+        // run of empty frames so a single flicker does not restart confirmation.
+        if (pendingValue !== null && ++pendingMisses > SCAN_MISS_TOLERANCE) {
+            pendingValue = null;
+            pendingFrames = 0;
+            pendingMisses = 0;
+        }
+        return null;
+    }
+
+    pendingMisses = 0;
+    if (hit.text === pendingValue) {
+        pendingFrames++;
+    } else {
+        // New candidate — start confirming it from scratch.
+        pendingValue = hit.text;
+        pendingSince = now;
+        pendingFrames = 1;
+        return null;
+    }
+
+    if (pendingFrames >= SCAN_CONFIRM_FRAMES && (now - pendingSince) >= SCAN_CONFIRM_MS) {
+        // Confirmed steady — accept, then re-arm so a re-scan needs fresh
+        // stability (also debounces back-to-back captures of the same code).
+        resetScanGate();
+        return hit;
+    }
+    return null;
+}
+
 // ── Symbology sets ─────────────────────────────────────
 // zxing-wasm accepts both canonical names ("QRCode") and HRI labels ("EAN-13"),
 // so the per-vendor formats string passes through unchanged.
@@ -156,7 +245,11 @@ export async function decodeFrame(imageData) {
         for (var i = 0; i < (results ? results.length : 0); i++) {
             if (results[i].isValid && results[i].text) { hit = results[i]; break; }
         }
-        if (hit && onResultCb) onResultCb(toResult(hit));
+        // Gate on stability — only a code held steady past the arming + confirm
+        // window is accepted, so the user locks in the intended code, not a
+        // wrong one that briefly crossed the frame.
+        var accepted = gateResult(hit);
+        if (accepted && onResultCb) onResultCb(toResult(accepted));
     } catch (err) {
         dbg("wasm decode error: " + (err ? err.message : "unknown"));
     } finally {
