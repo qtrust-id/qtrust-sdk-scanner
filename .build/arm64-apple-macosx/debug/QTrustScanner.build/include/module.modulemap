@@ -1,3 +1,0 @@
-module QTrustScanner {
-    header "/private/tmp/qtrust-sdk-scanner/.build/arm64-apple-macosx/debug/QTrustScanner.build/include/QTrustScanner-Swift.h"
-}
