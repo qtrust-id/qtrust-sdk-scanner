@@ -236,6 +236,13 @@ html, body { background: #f0f0f0; overflow: hidden; width: 100%; height: 100%; f
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
     text-align: center;
     animation: tut-pop 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    /* Let the browser keep vertical scroll/drag native; horizontal drags are
+       read by the swipe gesture handler in tutorial.js instead of being
+       swallowed. user-select is off so a swipe across the copy does not raise
+       the iOS text-selection loupe and cancel the gesture. */
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 @keyframes tut-pop {
@@ -253,6 +260,25 @@ html, body { background: #f0f0f0; overflow: hidden; width: 100%; height: 100%; f
 }
 .tut-close:hover { background: #f3f4f6; }
 .tut-close:active { transform: scale(0.9); }
+
+/* Step content slides in from the side it came from, so the gesture and the
+   content agree on direction. Compositor-only properties (transform/opacity). */
+@keyframes tut-slide-next {
+    from { opacity: 0; transform: translateX(32px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes tut-slide-prev {
+    from { opacity: 0; transform: translateX(-32px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.tut-step.slide-next { animation: tut-slide-next 260ms cubic-bezier(0.16, 1, 0.3, 1); }
+.tut-step.slide-prev { animation: tut-slide-prev 260ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+    .tut-card { animation: none; }
+    .tut-step.slide-next, .tut-step.slide-prev { animation: none; }
+}
 
 .tut-title {
     font-size: 1.0625rem; font-weight: 700; color: #1a1a1a;

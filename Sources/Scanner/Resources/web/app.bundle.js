@@ -2805,7 +2805,7 @@
   // modules/telemetry.js
   var TELEMETRY_URL = "https://staging-ce-app-sdk-api.qtrust.id/v1/sdk/scan";
   var TELEMETRY_API_KEY = "qtrust-sdk-web-key-2026";
-  var APP_VERSION = "1.2.5";
+  var APP_VERSION = "1.2.6";
   var DEDUP_WINDOW_MS = 3e3;
   var lastValue = null;
   var lastAt = 0;
@@ -2900,10 +2900,150 @@
     dbg("lifecycle: visibility handler installed");
   }
 
+  // modules/swipe.js
+  var SWIPE_THRESHOLD_PX = 48;
+  function swipeDirection(dx, dy) {
+    if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return 0;
+    if (Math.abs(dx) <= Math.abs(dy)) return 0;
+    return dx < 0 ? 1 : -1;
+  }
+
+  // modules/tutorial.js
+  var TUTORIAL_STEPS = {
+    qr: [
+      { title: "Posisi QR pada kemasan", desc: "QR biasanya berada di sisi belakang atau samping kemasan", image: "tut-qr-1.png" },
+      { title: "Arahkan QR ke dalam area scan", desc: "Posisikan QR di dalam area scan dengan pencahayaan yang cukup", image: "tut-qr-2.png" },
+      { title: "Jarak Ideal", desc: "Pastikan jarak kamera sekitar 10\u201315 cm dari QR", image: "tut-qr-3.png" }
+    ],
+    barcode: [
+      { title: "Posisi barcode pada kemasan", desc: "Barcode biasanya berada di sisi belakang atau samping kemasan", image: "tut-bc-1.png" },
+      { title: "Arahkan barcode ke dalam area scan", desc: "Posisikan barcode di dalam area scan dengan pencahayaan yang cukup", image: "tut-bc-2.png" },
+      { title: "Jarak Ideal", desc: "Pastikan jarak kamera sekitar 10\u201315 cm dari barcode", image: "tut-bc-3.png" }
+    ]
+  };
+  var tutorialOverlay = document.getElementById("tutorial-overlay");
+  var tutTitle = document.getElementById("tut-title");
+  var tutDesc = document.getElementById("tut-desc");
+  var tutImage = document.getElementById("tut-image");
+  var tutNext = document.getElementById("tut-next");
+  var tutClose = document.getElementById("tut-close");
+  var tutCard = document.querySelector(".tut-card");
+  var tutStep = document.getElementById("tut-step");
+  var tutDotsWrap = document.getElementById("tut-dots");
+  var tutSteps = [];
+  var tutIndex = 0;
+  var onTutorialDone = null;
+  var _tutorialBound = false;
+  function tutAsset(name) {
+    var map = typeof window !== "undefined" && window.__SCANNER_ASSETS__ || null;
+    if (map && map[name]) return map[name];
+    return "assets/" + name;
+  }
+  function playSlide(dir) {
+    if (!tutStep) return;
+    tutStep.classList.remove("slide-next");
+    tutStep.classList.remove("slide-prev");
+    if (!dir) return;
+    void tutStep.offsetWidth;
+    tutStep.classList.add(dir === 1 ? "slide-next" : "slide-prev");
+  }
+  function renderTutorialStep(dir) {
+    var step = tutSteps[tutIndex];
+    if (!step) return;
+    playSlide(dir);
+    if (tutTitle) tutTitle.textContent = step.title;
+    if (tutDesc) tutDesc.textContent = step.desc;
+    if (tutImage) {
+      tutImage.src = tutAsset(step.image);
+      tutImage.alt = step.title;
+    }
+    if (tutNext) tutNext.textContent = tutIndex >= tutSteps.length - 1 ? "Tutup" : "Lanjut";
+    if (tutDotsWrap) {
+      var dots = tutDotsWrap.querySelectorAll(".tut-dot");
+      for (var i2 = 0; i2 < dots.length; i2++) {
+        dots[i2].classList.toggle("active", i2 === tutIndex);
+      }
+    }
+  }
+  function advanceTutorial() {
+    if (tutIndex >= tutSteps.length - 1) {
+      dismissTutorial();
+    } else {
+      tutIndex++;
+      renderTutorialStep(1);
+    }
+  }
+  function rewindTutorial() {
+    if (tutIndex <= 0) return;
+    tutIndex--;
+    renderTutorialStep(-1);
+  }
+  function showTutorial() {
+    tutSteps = isLinearScanType(state.scanType) ? TUTORIAL_STEPS.barcode : TUTORIAL_STEPS.qr;
+    tutIndex = 0;
+    state.tutorialOpen = true;
+    renderTutorialStep();
+    if (tutorialOverlay) tutorialOverlay.classList.remove("hidden");
+  }
+  function hideTutorialOverlay() {
+    state.tutorialOpen = false;
+    if (tutorialOverlay) tutorialOverlay.classList.add("hidden");
+  }
+  function dismissTutorial() {
+    if (!state.tutorialOpen) return;
+    hideTutorialOverlay();
+    if (onTutorialDone) onTutorialDone();
+  }
+  var NO_POINTER = -1;
+  var swipePointerId = NO_POINTER;
+  var swipeStartX = 0;
+  var swipeStartY = 0;
+  var swipeAteClick = false;
+  function onSwipeStart(e2) {
+    if (swipePointerId !== NO_POINTER) return;
+    swipePointerId = e2.pointerId;
+    swipeStartX = e2.clientX;
+    swipeStartY = e2.clientY;
+    swipeAteClick = false;
+    if (tutCard.setPointerCapture) tutCard.setPointerCapture(e2.pointerId);
+  }
+  function onSwipeEnd(e2) {
+    if (e2.pointerId !== swipePointerId) return;
+    swipePointerId = NO_POINTER;
+    var dir = swipeDirection(e2.clientX - swipeStartX, e2.clientY - swipeStartY);
+    if (dir === 0) return;
+    swipeAteClick = true;
+    if (dir === 1) advanceTutorial();
+    else rewindTutorial();
+  }
+  function onSwipeCancel(e2) {
+    if (e2.pointerId === swipePointerId) swipePointerId = NO_POINTER;
+  }
+  function ignoreAfterSwipe(fn) {
+    return function() {
+      if (swipeAteClick) {
+        swipeAteClick = false;
+        return;
+      }
+      fn();
+    };
+  }
+  function initTutorialScreen(onDone) {
+    onTutorialDone = onDone;
+    if (_tutorialBound) return;
+    _tutorialBound = true;
+    if (tutNext) tutNext.addEventListener("click", ignoreAfterSwipe(advanceTutorial));
+    if (tutClose) tutClose.addEventListener("click", ignoreAfterSwipe(dismissTutorial));
+    if (tutCard) {
+      tutCard.addEventListener("pointerdown", onSwipeStart);
+      tutCard.addEventListener("pointerup", onSwipeEnd);
+      tutCard.addEventListener("pointercancel", onSwipeCancel);
+    }
+  }
+
   // modules/ui.js
   var homeScreen = document.getElementById("home-screen");
   var scannerContainer = document.getElementById("scanner-container");
-  var tutorialOverlay = document.getElementById("tutorial-overlay");
   var resultScreen = document.getElementById("result-screen");
   var homeResultSection = document.getElementById("home-result");
   var resultDataEl = document.getElementById("result-data");
@@ -2936,7 +3076,6 @@
     if (resultFormatEl) resultFormatEl.textContent = data.format || "";
   }
   var _resultScreenBound = false;
-  var _tutorialScreenBound = false;
   var _homeScreenBound = false;
   function initResultScreen(onScanAgain, onReport) {
     if (_resultScreenBound) return;
@@ -2980,80 +3119,6 @@
         scanInstructionText.textContent = SCAN_HINTS[state.scanType] || SCAN_HINTS[ScanType.QR];
       }
     }
-  }
-  var TUTORIAL_STEPS = {
-    qr: [
-      { title: "Posisi QR pada kemasan", desc: "QR biasanya berada di sisi belakang atau samping kemasan", image: "tut-qr-1.png" },
-      { title: "Arahkan QR ke dalam area scan", desc: "Posisikan QR di dalam area scan dengan pencahayaan yang cukup", image: "tut-qr-2.png" },
-      { title: "Jarak Ideal", desc: "Pastikan jarak kamera sekitar 10\u201315 cm dari QR", image: "tut-qr-3.png" }
-    ],
-    barcode: [
-      { title: "Posisi barcode pada kemasan", desc: "Barcode biasanya berada di sisi belakang atau samping kemasan", image: "tut-bc-1.png" },
-      { title: "Arahkan barcode ke dalam area scan", desc: "Posisikan barcode di dalam area scan dengan pencahayaan yang cukup", image: "tut-bc-2.png" },
-      { title: "Jarak Ideal", desc: "Pastikan jarak kamera sekitar 10\u201315 cm dari barcode", image: "tut-bc-3.png" }
-    ]
-  };
-  var tutTitle = document.getElementById("tut-title");
-  var tutDesc = document.getElementById("tut-desc");
-  var tutImage = document.getElementById("tut-image");
-  var tutNext = document.getElementById("tut-next");
-  var tutClose = document.getElementById("tut-close");
-  var tutDotsWrap = document.getElementById("tut-dots");
-  var tutSteps = [];
-  var tutIndex = 0;
-  var onTutorialDone = null;
-  function tutAsset(name) {
-    var map = typeof window !== "undefined" && window.__SCANNER_ASSETS__ || null;
-    if (map && map[name]) return map[name];
-    return "assets/" + name;
-  }
-  function renderTutorialStep() {
-    var step = tutSteps[tutIndex];
-    if (!step) return;
-    if (tutTitle) tutTitle.textContent = step.title;
-    if (tutDesc) tutDesc.textContent = step.desc;
-    if (tutImage) {
-      tutImage.src = tutAsset(step.image);
-      tutImage.alt = step.title;
-    }
-    if (tutNext) tutNext.textContent = tutIndex >= tutSteps.length - 1 ? "Tutup" : "Lanjut";
-    if (tutDotsWrap) {
-      var dots = tutDotsWrap.querySelectorAll(".tut-dot");
-      for (var i2 = 0; i2 < dots.length; i2++) {
-        dots[i2].classList.toggle("active", i2 === tutIndex);
-      }
-    }
-  }
-  function advanceTutorial() {
-    if (tutIndex >= tutSteps.length - 1) {
-      dismissTutorial();
-    } else {
-      tutIndex++;
-      renderTutorialStep();
-    }
-  }
-  function showTutorial() {
-    tutSteps = isLinearScanType(state.scanType) ? TUTORIAL_STEPS.barcode : TUTORIAL_STEPS.qr;
-    tutIndex = 0;
-    state.tutorialOpen = true;
-    renderTutorialStep();
-    if (tutorialOverlay) tutorialOverlay.classList.remove("hidden");
-  }
-  function hideTutorialOverlay() {
-    state.tutorialOpen = false;
-    if (tutorialOverlay) tutorialOverlay.classList.add("hidden");
-  }
-  function dismissTutorial() {
-    if (!state.tutorialOpen) return;
-    hideTutorialOverlay();
-    if (onTutorialDone) onTutorialDone();
-  }
-  function initTutorialScreen(onDone) {
-    onTutorialDone = onDone;
-    if (_tutorialScreenBound) return;
-    _tutorialScreenBound = true;
-    if (tutNext) tutNext.addEventListener("click", advanceTutorial);
-    if (tutClose) tutClose.addEventListener("click", dismissTutorial);
   }
   function initHomeScreen(onStartScan) {
     if (_homeScreenBound) return;

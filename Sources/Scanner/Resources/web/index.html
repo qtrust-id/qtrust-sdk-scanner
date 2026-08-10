@@ -71,7 +71,7 @@
         </div>
 
         <div class="home-footer">
-            <span>QTrust Scanner v1.2.5</span>
+            <span>QTrust Scanner v1.2.6</span>
         </div>
     </div>
 
@@ -192,7 +192,7 @@
         </div>
 
         <!-- Version label -->
-        <div id="version">QTrust Scanner v1.2.5</div>
+        <div id="version">QTrust Scanner v1.2.6</div>
 
         <!-- Bottom tip -->
         <div id="scan-tip">
@@ -225,10 +225,14 @@
                 <button id="tut-close" class="tut-close" aria-label="Tutup tutorial">
                     <svg viewBox="0 0 24 24" width="20" height="20"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
-                <h3 id="tut-title" class="tut-title"></h3>
-                <p id="tut-desc" class="tut-desc"></p>
-                <div class="tut-image-wrap">
-                    <img id="tut-image" class="tut-image" alt="" width="320" height="150">
+                <!-- Wrapper exists so the step content can slide as one block
+                     on navigation; the buttons and dots stay put. -->
+                <div id="tut-step" class="tut-step">
+                    <h3 id="tut-title" class="tut-title"></h3>
+                    <p id="tut-desc" class="tut-desc"></p>
+                    <div class="tut-image-wrap">
+                        <img id="tut-image" class="tut-image" alt="" width="320" height="150">
+                    </div>
                 </div>
                 <button id="tut-next" class="tut-next"></button>
                 <div id="tut-dots" class="tut-dots" aria-hidden="true">
